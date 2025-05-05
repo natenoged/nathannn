@@ -5,32 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meet with Nathan</title>
     <style>
-      body {
+      html, body {
         margin: 0;
-        font-family: sans-serif;
-        background: #f9f9f9;
-      }
-      .calendar-container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem;
+        padding: 0;
+        height: 100%;
       }
       iframe {
-        width: 100%;
-        height: 600px;
         border: none;
+        width: 100vw;
+        height: 100vh;
+        display: block;
       }
     </style>
   </head>
   <body>
-    <div class="calendar-container">
-      <h1>Schedule a meeting with Nathan</h1>
-      <!-- Google Calendar Appointment Scheduling begin -->
-      <iframe
-        src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0fdVTSk4RLNTKoY48pwQDNX9XHCCaBMfBuDPfkIgnAMBUMmqInOzd0UvGNzdZJOasxL1LHwKi8?gv=true"
-        allowfullscreen
-      ></iframe>
-      <!-- end Google Calendar Appointment Scheduling -->
-    </div>
+    <iframe
+      src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0fdVTSk4RLNTKoY48pwQDNX9XHCCaBMfBuDPfkIgnAMBUMmqInOzd0UvGNzdZJOasxL1LHwKi8?gv=true"
+      allowfullscreen
+    ></iframe>
   </body>
 </html>
