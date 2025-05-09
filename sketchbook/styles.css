@@ -55,6 +55,13 @@ color: #0000ff;
     border: 1px dashed #616161; /* Dashed border for visibility */
     background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
     backdrop-filter: blur(.8px);
+    opacity: 0; /* Start with opacity 0 */
+    transition: opacity 0.1s ease; /* Add smooth transition */
+}
+
+/* Add a class for loaded images */
+.image-container.loaded {
+    opacity: 1;
 }
 
 /* Style for the images within the container */

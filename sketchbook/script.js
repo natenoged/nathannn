@@ -100,22 +100,23 @@ function createDraggableImage(src) {
     container.className = 'image-container';
 
     const img = document.createElement('img');
-    img.src = src; // Set the image source
-    img.ondragstart = () => false; // Disable default drag behavior
+    img.src = src;
+    img.ondragstart = () => false;
 
-    // Randomize the initial position and size of the container
     const test = 150;
     container.style.left = `${Math.random() * (window.innerWidth - test)}px`;
     container.style.top = `${Math.random() * (window.innerHeight - test)}px`;
     container.style.width = `${(test)}px`;
-    container.style.zIndex = zIndexCounter++; // Assign a unique z-index
+    container.style.zIndex = zIndexCounter++;
 
-    // Attach the dragging behavior
     container.addEventListener('mousedown', startDrag);
-
-    // Append the image to the container and the container to the document
     container.appendChild(img);
     document.body.appendChild(container);
+    
+    // Add slight delay before showing the container
+    setTimeout(() => {
+        container.classList.add('loaded');
+    }, 100);
 }
 
 // Function to load images sequentially with a delay
@@ -130,7 +131,7 @@ function loadImagesSequentially() {
         } else {
             clearInterval(interval); // Stop when all images are loaded
         }
-    }, 30); // Adjust interval time (in milliseconds) for pacing
+    }, 40); // Adjust interval time (in milliseconds) for pacing
 }
 
 // Function to handle dragging of an image container
