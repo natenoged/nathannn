@@ -191,7 +191,7 @@
                 if (externalLink.match(/\.(jpg|jpeg|png|gif)$/i)) {
                     embedContent = `<img src="${externalLink}" alt="${name}">`;
                 } else if (externalLink.match(/\.(webm|mp4|ogg)$/i)) {
-                    embedContent = `<video src="${externalLink}" controls></video>`;
+                    embedContent = `<video src="${externalLink}" autoplay muted loop playsinline controls></video>`;
                 } else if (externalLink.includes('youtube.com') || externalLink.includes('youtu.be')) {
                     let embedUrl = '';
                     if (externalLink.includes('youtube.com')) {
