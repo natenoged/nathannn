@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nathan's Work</title>
+    <!-- Preconnect for Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/styles.css">
+    
+</head>     
+<body class="work">
+    <!--<h1>Portfolio</h1>-->
+    <div class="filter-controls" style="visibility: hidden">
+        <!-- All buttons will be added dynamically -->
+    </div>
+    <div class="portfolio-grid" id="portfolioGrid">
+        <!-- Portfolio items will be added here dynamically -->
+    </div>
+
+    <div id="portfolioModal" class="modal">
+        <div class="modal-content">
+            <div id="modalHeader">
+                <h3 id="modalPortfolioName"></h3>
+                <div id="modalPortfolioTags" class="portfolio-tags"></div>
+                <span class="close">&times;</span>
+            </div>
+            <div id="modalVideoContainer"></div>
+            <div id="modalDescription"></div>
+        </div>
+    </div>
+
+    <script>
+        // Constants for Google Sheets integration
+        const SHEET_ID = '2PACX-1vQg73EGWJtcY7cNZMQPqgWjRkFQCF5s1MKZbpJ2UxEX9cOzov0_08f15U-eirCxca4eGFLbdM_9E8ik';
+        const SHEET_URL = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv`;
+
+        // Normalize file paths to use forward slashes for URLs
+        function normalizePath(path) {
+            if (!path) return '';
+            // If it's already a URL, return it as is
+            if (path.startsWith('http://') || path.startsWith('https://')) {
+                return path;
+            }
+            // Replace backslashes with forward slashes and ensure proper relative path
+            let normalized = path.replace(/\\/g, '/');
+            // If the path doesn't start with a slash or dot, make it relative
+            if (!normalized.startsWith('/') && !normalized.startsWith('.')) {
+                normalized = '../' + normalized;
+            }
+            return normalized;
+        }
+
+        // DOM elements
+        const portfolioGrid = document.getElementById('portfolioGrid');
+        const filterControls = document.querySelector('.filter-controls');        // Data storage
+        let allItems = [];
+        const categories = new Set();
+        const types = new Set();
+        const animatedItems = new Map(); // Track which items have been animated in each filter
+
+        // Sanitize data to prevent XSS attacks
+        function sanitizeHTML(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+
+        // Fetch portfolio data from Google Sheets
+        async function fetchPortfolioData() {
+            try {
+                const response = await fetch(SHEET_URL);
+                if (!response.ok) throw new Error('Failed to fetch data');
+                const csvData = await response.text();
+                return parseCSV(csvData);
+            } catch (error) {
+                console.error('Error fetching portfolio data:', error);
+                portfolioGrid.innerHTML = '<p>Error loading portfolio data. Please try again later.</p>';
+                return [];
+            }
+        }
+
+        // Parse CSV data into a usable format
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+            return lines.slice(1).map(line => {
+                const entries = [];
+                let currentEntry = '';
+                let insideQuotes = false;
+
+                for (let char of line) {
+                    if (char === '"') insideQuotes = !insideQuotes;
+                    else if (char === ',' && !insideQuotes) {
+                        entries.push(currentEntry.trim().replace(/"/g, ''));
+                        currentEntry = '';
+                    } else currentEntry += char;
+                }
+                entries.push(currentEntry.trim().replace(/"/g, ''));
+
+                const entry = {};
+                headers.forEach((header, index) => {
+                    entry[header.toLowerCase()] = entries[index] || '';
+                });
+                return entry;
+            }).filter(item => item.name);
+        }
+
+        // renderPortfolio function with lazy loading
+        function renderPortfolio(items) {
+            portfolioGrid.innerHTML = '';
+            items.forEach((item, index) => {
+                const portfolioItem = document.createElement('div');
+                portfolioItem.className = 'portfolio-item';
+                portfolioItem.dataset.category = sanitizeHTML(item.category || '');
+                portfolioItem.dataset.type = sanitizeHTML(item.type || '');
+
+                const tags = item.tags ? item.tags.split(',').map(tag => sanitizeHTML(tag.trim())) : [];
+                const isThumbnailVideo = item['thumbnail url'] && /\.(mp4|webm|ogg)$/.test(item['thumbnail url']);
+                const thumbnailUrl = item['thumbnail url'] ? normalizePath(item['thumbnail url']) : 'https://via.placeholder.com/300x200?text=No+Image';
+                const thumbnailContent = isThumbnailVideo
+                    ? `<video class="thumbnail" src="${sanitizeHTML(thumbnailUrl)}" 
+                        type="video/webm" 
+                        preload="metadata"
+                        loading="lazy">
+                        Your browser does not support the video tag.
+                       </video>`
+                    : `<div class="thumbnail" style="background-image: url('${sanitizeHTML(thumbnailUrl)}')" loading="lazy"></div>`;
+
+                portfolioItem.innerHTML = `
+                    <div>
+                        ${thumbnailContent}
+                        <div class="portfolio-content">
+                            <div class="portfolio-subtitle">${sanitizeHTML(item.subtitle || '')}</div>
+                            <div class="portfolio-bwrap">
+                                <h3 class="portfolio-name">${sanitizeHTML(item.name || 'Untitled')}</h3>
+                                <div class="portfolio-tags">
+                                    ${tags.map(tag => `<span class="tag" data-tag="${sanitizeHTML(tag.toLowerCase())}">${sanitizeHTML(tag)}</span>`).join('')}
+                                </div>
+                            </div>
+                            <div class="portfolio-client">${item.client ? 'Client: ' + sanitizeHTML(item.client) : ''}</div>
+                        </div>
+                    </div>
+                `;                portfolioItem.addEventListener('click', () => {
+                    openModal(item['external project link'], item.description, item.name, tags);
+                });
+
+                // Get current filter from URL or default to 'all'
+                const currentFilter = window.location.hash.replace(/^#?\/?/, '').toLowerCase() || 'all';
+                
+                // Check if this item has been animated in this filter
+                const itemKey = `${item.name}-${currentFilter}`;
+                if (!animatedItems.has(itemKey)) {
+                    setTimeout(() => {
+                        portfolioItem.classList.add('animate-in'); // Add class to trigger animation
+                        portfolioItem.classList.add('hover-ready'); // Add class to enable hover effect
+                        animatedItems.set(itemKey, true);
+                    }, index * 100);
+                } else {
+                    portfolioItem.classList.add('animate-in', 'hover-ready');
+                }
+
+                portfolioGrid.appendChild(portfolioItem);
+
+                if (item.category) categories.add(item.category);
+                if (item.type) types.add(item.type);
+            });
+        }
+
+        // Open modal with portfolio details
+        function openModal(externalLink, description, name, tags) {
+            const modal = document.getElementById('portfolioModal');
+            const modalVideoContainer = document.getElementById('modalVideoContainer');
+            const modalDescription = document.getElementById('modalDescription');
+            const modalPortfolioName = document.getElementById('modalPortfolioName');
+            const modalPortfolioTags = document.getElementById('modalPortfolioTags');
+            const closeButton = modal.querySelector('.close');
+            const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+            const firstFocusableElement = modal.querySelectorAll(focusableElements)[0];
+            const focusableContent = modal.querySelectorAll(focusableElements);
+            const lastFocusableElement = focusableContent[focusableContent.length - 1];
+            let previouslyFocusedElement = document.activeElement;
+
+            modalPortfolioName.textContent = name || 'Untitled';
+            modalPortfolioTags.innerHTML = tags.map(tag => `<span class="tag" data-tag="${tag.toLowerCase()}">${tag}</span>`).join('');
+
+            if (externalLink) {
+                let embedContent = '';
+
+                if (externalLink.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                    embedContent = `<img src="${externalLink}" alt="${name}">`;
+                } else if (externalLink.match(/\.(webm|mp4|ogg)$/i)) {
+                    embedContent = `<video src="${externalLink}" controls></video>`;
+                } else if (externalLink.includes('youtube.com') || externalLink.includes('youtu.be')) {
+                    let embedUrl = '';
+                    if (externalLink.includes('youtube.com')) {
+                        const urlParams = new URL(externalLink).searchParams;
+                        const videoId = urlParams.get('v');
+                        const playlistId = urlParams.get('list');
+                        embedUrl = playlistId
+                            ? `https://www.youtube.com/embed/videoseries?list=${playlistId}`
+                            : videoId
+                                ? `https://www.youtube.com/embed/${videoId}`
+                                : '';
+                    } else if (externalLink.includes('youtu.be')) {
+                        const videoId = externalLink.split('/').pop();
+                        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                    }
+                    embedContent = embedUrl
+                        ? `<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`
+                        : '<p>No video</p>';
+                } else {
+                    embedContent = '<p>Unsupported content type</p>';
+                }
+
+                modalVideoContainer.innerHTML = embedContent;
+            } else {
+                modalVideoContainer.innerHTML = '<p>No content available</p>';
+            }
+
+            modalDescription.innerHTML = description || '<p>No description</p>';
+            modal.style.display = 'block';
+
+            // Trap focus within the modal
+            function trapFocus(event) {
+                if (event.key === 'Tab') {
+                    if (event.shiftKey) { // Shift + Tab
+                        if (document.activeElement === firstFocusableElement) {
+                            event.preventDefault();
+                            lastFocusableElement.focus();
+                        }
+                    } else { // Tab
+                        if (document.activeElement === lastFocusableElement) {
+                            event.preventDefault();
+                            firstFocusableElement.focus();
+                        }
+                    }
+                }
+            }
+
+            // Close modal with ESC key
+            function handleKeydown(event) {
+                if (event.key === 'Escape') {
+                    closeModal();
+                } else {
+                    trapFocus(event);
+                }
+            }
+
+            // Close modal and restore focus
+            function closeModal() {
+                modal.style.display = 'none';
+                modalVideoContainer.innerHTML = '';
+                modalDescription.innerHTML = '';
+                document.removeEventListener('keydown', handleKeydown);
+                previouslyFocusedElement.focus();
+            }
+
+            closeButton.onclick = closeModal;
+
+            window.onclick = (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            };
+
+            document.addEventListener('keydown', handleKeydown);
+
+            // Set focus to the first focusable element in the modal
+            firstFocusableElement.focus();
+        }
+
+        // Create filter buttons dynamically based on tags
+        function createFilterButtons() {
+            const tagsSet = new Set(['all']); // Add 'all' as the first filter
+
+            // Collect all unique tags from the portfolio items
+            allItems.forEach(item => {
+                if (item.tags) {
+                    item.tags.split(',').forEach(tag => {
+                        tagsSet.add(tag.trim());
+                    });
+                }
+            });
+
+            // Clear existing buttons
+            filterControls.innerHTML = '';
+
+            // Create buttons for all filters, including 'all'
+            Array.from(tagsSet).forEach(tag => {
+                const button = document.createElement('button');
+                button.className = 'filter-btn';
+                button.dataset.filter = tag.toLowerCase();
+                button.textContent = tag === 'all' ? 'All' : tag;
+                if (tag === 'all') button.classList.add('active');
+                filterControls.appendChild(button);
+            });
+
+            // Add event listeners to filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const filter = this.dataset.filter;
+                    
+                    // Update URL without triggering hashchange
+                    if (filter === 'all') {
+                        history.replaceState(null, '', window.location.pathname);
+                    } else {
+                        history.replaceState(null, '', `#${filter}`);
+                    }
+
+                    // Update active state and filter items
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (filter === 'all') {
+                        renderPortfolio(allItems);
+                    } else {
+                        const filteredItems = allItems.filter(item =>
+                            item.tags && item.tags.split(',').map(tag => tag.trim().toLowerCase()).includes(filter)
+                        );
+                        renderPortfolio(filteredItems);
+                    }
+                });
+            });
+
+            // Show the filter controls once everything is ready
+            filterControls.style.visibility = 'visible';
+        }
+
+        // Initialize portfolio
+        async function initPortfolio() {
+            try {
+                allItems = await fetchPortfolioData();
+                createFilterButtons();
+                
+                // Handle initial hash after buttons are created
+                const initialHash = window.location.hash.replace(/^#?\/?/, '').toLowerCase();
+                if (initialHash) {
+                    const targetButton = document.querySelector(`[data-filter="${initialHash}"]`);
+                    if (targetButton) {
+                        targetButton.click();
+                    } else {
+                        renderPortfolio(allItems);
+                    }
+                } else {
+                    renderPortfolio(allItems);
+                }
+            } catch (error) {
+                console.error('Failed to initialize portfolio:', error);
+                portfolioGrid.innerHTML = '<p>Error loading portfolio data. Please try again later.</p>';
+            }
+        }
+
+        // Handle URL hash changes
+        function handleHashChange() {
+            // Remove leading slash if present and get hash
+            const hash = window.location.hash.replace(/^#?\/?/, '').toLowerCase();
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            // Find matching filter button
+            const targetButton = Array.from(filterButtons).find(btn => 
+                btn.dataset.filter === hash || (hash === '' && btn.dataset.filter === 'all')
+            );
+            
+            if (targetButton) {
+                targetButton.click();
+            } else if (hash) {
+                const allButton = document.querySelector('[data-filter="all"]');
+                allButton.click();
+            }
+        }
+
+        // Add event listeners before initializing
+        window.addEventListener('hashchange', handleHashChange);
+        initPortfolio();
+    </script>
+</body>
+</html>
