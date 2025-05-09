@@ -9,7 +9,7 @@ body {
 }
 
 /*Link button*/
-.link-block {
+.breadcrumb-link-block {
     margin: 10px;
     display: inline-flex;
     justify-content: center;
@@ -29,19 +29,19 @@ body {
     font-weight: 400;
   }
   
-  .link-text{
+  .breadcrumb-link-text{
 opacity: 60%;
 color: #0000ff;
 
   }
 
-  .link-text:hover{ 
+  .breadcrumb-link-text:hover{ 
     text-decoration: underline;
     opacity: 100%;
 }
 
-  .link-arrow,
-  .link-description {
+  .breadcrumb-link-arrow,
+  .breadcrumb-link-description {
     
     word-wrap: break-word;
   }
