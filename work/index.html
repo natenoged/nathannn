@@ -142,15 +142,8 @@
                             <div class="portfolio-client">${item.client ? 'Client: ' + sanitizeHTML(item.client) : ''}</div>
                         </div>
                     </div>
-                `;                
-                portfolioItem.addEventListener('click', () => {
-                    if (item['off-site']?.toLowerCase() === 'yes' && item['external project link']) {
-                        // Open external link in new tab for off-site items
-                        window.open(item['external project link'], '_blank', 'noopener noreferrer');
-                    } else {
-                        // Open modal for regular items
-                        openModal(item['external project link'], item.description, item.name, tags);
-                    }
+                `;                portfolioItem.addEventListener('click', () => {
+                    openModal(item['external project link'], item.description, item.name, tags);
                 });
 
                 // Get current filter from URL or default to 'all'
@@ -217,16 +210,6 @@
                     embedContent = embedUrl
                         ? `<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`
                         : '<p>No video</p>';
-                } else if (externalLink.includes('soundcloud.com')) {
-                    // Handle SoundCloud embeds
-                    const soundCloudUrl = encodeURIComponent(externalLink);
-                    embedContent = `<iframe 
-                        width="100%" 
-                        height="166" 
-                        scrolling="no" 
-                        frameborder="no" 
-                        src="https://w.soundcloud.com/player/?url=${soundCloudUrl}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
-                    ></iframe>`;
                 } else {
                     embedContent = '<p>Unsupported content type</p>';
                 }
