@@ -5,7 +5,7 @@
     --Smoke: #D3D3D3;
     --text-primary: #000000;
     --text-secondary: #666666;
-    --nav-link: #000AFF;
+    --nav-link: rgb(0, 0, 255);
     --tag-bg: #eeeeeeb0;
     --form-bg: #EDEDED;
     --form-text: #000000;
@@ -20,7 +20,7 @@ body.dark-mode {
     --Smoke: #404040;
     --text-primary: #ffffff;
     --text-secondary: #b3b3b3;
-    --nav-link: #f6f6f6;
+    --nav-link: rgb(246, 246, 246);
     --tag-bg: #eeeeeeb0;
     --form-bg: #2d2d2d;
     --form-text: #ffffff;
@@ -65,10 +65,7 @@ body {
     font-family: "Roboto Mono", monospace;
     font-size: 16px;
     text-decoration: none;
-}
-
-.nav-link:visited {
-    color: #800080; /* Classic purple */
+    -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
 }
 
 .menu-icon,
@@ -157,11 +154,22 @@ transition: transform 0.3s ease; /* Add transition */
     text-decoration: none;
 }
 
-.home .nav-link-item:hover,.nav-item:hover {
+.home .nav-link-item:hover, .nav-item:hover {
     background: var(--clear);
     cursor: pointer;
+}
+
+.home .nav-link-item:hover .nav-link, 
+.nav-item:hover .nav-link {
     text-decoration: underline;
-    }
+    text-decoration-color: var(--nav-link);
+}
+
+/* Remove or comment out the original nav-link hover style */
+/* .nav-link:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--nav-link);
+} */
 
 .home .nav-item.first-item {
     border-top: none;
@@ -458,6 +466,18 @@ body.work {
         padding: 10px;
     }
     
+    /* Prevent red highlight on tap for navigation items */
+    .nav-item,
+    .nav-link-item {
+        -webkit-tap-highlight-color: transparent;
+        user-select: none; /* Prevents text selection */
+    }
+    
+    /* Ensure the hover effect works properly on touch devices */
+    .nav-item:active,
+    .nav-link-item:active {
+        background: var(--clear);
+    }
 }
 
 /* Contact Form Styles */
