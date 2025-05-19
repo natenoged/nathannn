@@ -4,18 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nathan Nadler-Nir Portfolio</title>
+  <meta name="description" content="Nathan Nadler-Nir - Creative technician and thing-maker portfolio">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="favicon" type="image/x-icon" href="/favicon.ico">
   <script src="/theme.js" defer></script>
 </head>
 <body class="home">
 
-    <!-- Header -->
-         
+            
     
     <!-- Profile Card -->
     
       <div class="profile-card">
-        <img class="profile-image" src="\assets\jpg\profile-40.jpg" alt="Profile Photo">
+        <img class="profile-image" src="/assets/jpg/profile-40.jpg" alt="Profile Photo">
         <div class="profile-info">
           Hi, I'm Nathan Nadler-Nir,<br>a creative technician & thing-maker
         </div>
@@ -25,47 +26,45 @@
     <!-- Navigation -->
     <nav class="nav-menu">
       <a href="work/" class="nav-item first-item">
-      <img class="icon" src="\assets\icons\star.svg" alt="About icon">
-      <span class="nav-link">Work</span>
+        <img class="icon" src="/assets/icons/star.svg" alt="About icon">
+        <span class="nav-link">Work</span>
       </a>
       
       <div class="submenu">
-        
         <div class="submenu-content">
-          <div class="nav-link-item">
+          <a href="work/#web" class="nav-link-item">
             <img class="icon" src="\assets\icons\media.gif" alt="Websites icon">
-            <a href="work/#web" class="nav-link">Websites</a>
-          </div>
-          <div class="nav-link-item">
+            <span class="nav-link">Websites</span>
+          </a>
+          <a href="work/#video" class="nav-link-item">
             <img class="icon" src="\assets\icons\film.gif" alt="Film icon">
-            <a href="work/#video" class="nav-link">Film</a>
-          </div>
-          <div class="nav-link-item">
+            <span class="nav-link">Film</span>
+          </a>
+          <a href="sketchbook/" class="nav-link-item">
             <img class="icon" src="\assets\icons\sketchbook.gif" alt="Sketchbook icon">
-            <a href="sketchbook/" class="nav-link">Sketchbook</a>
-          </div>
-          <div class="nav-link-item">
+            <span class="nav-link">Sketchbook</span>
+          </a>
+          <a href="work/#audio" class="nav-link-item">
             <img class="icon" src="\assets\icons\music-folder.gif" alt="Audio icon">
-            <a href="work/#audio" class="nav-link">Audio</a>
-          </div>
-          
+            <span class="nav-link">Audio</span>
+          </a>
         </div>
       </div> 
       
-      <div class="nav-item">
+      <a href="toolkit/" class="nav-item">
         <img class="icon" src="\assets\icons\tool.gif" alt="Film icon">
-        <a href="toolkit/" class="nav-link">Toolkit</a>
-      </div>
+        <span class="nav-link">Toolkit</span>
+      </a>
 
-      <div class="nav-item">
+      <a href="about/" class="nav-item">
         <img class="icon" src="\assets\icons\question-mark.gif" alt="About icon">
-        <a href="#about" class="nav-link">About</a>
-      </div>
+        <span class="nav-link">About</span>
+      </a>
       
-      <div class="nav-item">
+      <a href="contact/" class="nav-item">
         <img class="icon" src="\assets\icons\hand-right.gif" alt="Contact icon">
-        <a href="#contact" class="nav-link">Contact</a>
-      </div>
+        <span class="nav-link">Contact</span>
+      </a>
     </nav>
 
     <!-- Mode-Toggle -->
@@ -76,35 +75,76 @@
       </button>
     </header>
 
+    <!--Contact-->
+    <div class="contact-section">
+  <div class="form-block">
+    <form class="contact-form" action="https://formspree.io/f/xqaqjpej" method="POST">
+      <div class="form-inputs">
+        <div class="form-line">
+          <label>To:</label>
+          <div class="recipient">
+            <a href="mailto:nathan.nadlernir@gmail.com">nathan.nadlernir@gmail.com</a>
+          </div>
+        </div>
+        
+        <div class="form-line">
+          <label>I want a</label>
+          <div class="dropdown">
+            <select name="service">
+              <option value="website">Website</option>
+              <option value="video">Video</option>
+              <option value="quote">Quote</option>
+              <option value="meeting">Meeting</option>
+              <option value="friend">Friend</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-line">
+          <label>Signed,</label>
+          <input type="email" name="email" placeholder="Your email address" required>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-button">
+        Get in touch
+        <svg width="10" height="13" viewBox="0 0 10 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 11L9 6.69565L2.35 2" stroke="black" stroke-opacity="0.6" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  <img class="chat-emoji" src="assets/icons/mailbox.gif">
+  
+  <div class="social-links">
+    <a href="https://www.instagram.com/nathannadlernir" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.linkedin.com/in/natenoged/" target="_blank" rel="noopener">Linkedin</a>
+    <a href="https://www.youtube.com/@Natenoged" target="_blank" rel="noopener">YouTube</a>
+    <a href="https://substack.com/@natenoged" target="_blank" rel="noopener">Substack</a>
+  </div>
+</div>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Select all nav items and submenu items
-      const navItems = document.querySelectorAll(
-        ".profile-card,.nav-item, .submenu-content .nav-link-item, .section-title, .window");
+        // Combined animations
+        const fadeElements = document.querySelectorAll(
+            ".profile-card, .nav-item, .submenu-content .nav-link-item, .section-title, .window, .form-block, .chat-emoji, .social-links"
+        );
+        const growElements = document.querySelectorAll(".profile-image, .icon");
 
-      // Loop through each item and apply a delay
-      navItems.forEach((item, index) => {
-        item.style.opacity = "0"; // Start hidden
-        item.style.animation = `fadeIn 0.4s ease-out forwards`;
-        item.style.animationDelay = `${index * 0.05}s`; // Incremental delay
-      });
+        fadeElements.forEach((item, index) => {
+            item.style.opacity = "0";
+            item.style.animation = `fadeIn 0.4s ease-out forwards`;
+            item.style.animationDelay = `${index * 0.05}s`;
+        });
+
+        growElements.forEach((item, index) => {
+            item.style.transform = "scale(0)";
+            item.style.animation = `grow 0.1s ease-out forwards`;
+            item.style.animationDelay = `${index * 0.05}s`;
+        });
     });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      // Select all nav items and submenu items
-      const navItems = document.querySelectorAll(
-        ".profile-image, .icon");
-
-      // Loop through each item and apply a delay
-      navItems.forEach((item, index) => {
-        item.style.transform = "scale(0)";
-        item.style.animation = `grow 0.1s ease-out forwards`;
-        item.style.animationDelay = `${index * 0.05
-        }s`; // Incremental delay
-      });
-    });
-
-    
   </script>
 </body>
 </html>

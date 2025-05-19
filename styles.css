@@ -7,6 +7,11 @@
     --text-secondary: #666666;
     --nav-link: #000AFF;
     --tag-bg: #eeeeeeb0;
+    --form-bg: #EDEDED;
+    --form-text: #000000;
+    --form-text-secondary: rgba(0, 0, 0, 0.60);
+    --button-bg: #D8FFE4;
+    --input-border: #000000;
 }
 
 body.dark-mode {
@@ -17,6 +22,11 @@ body.dark-mode {
     --text-secondary: #b3b3b3;
     --nav-link: #f6f6f6;
     --tag-bg: #eeeeeeb0;
+    --form-bg: #2d2d2d;
+    --form-text: #ffffff;
+    --form-text-secondary: rgba(255, 255, 255, 0.60);
+    --button-bg: #1a4d2e;
+    --input-border: #ffffff;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@100..900&display=swap');
@@ -64,8 +74,8 @@ body {
 }
 
 .mode-toggle {
-    display: none;
-   
+    
+   display:none;
 }
 
 #theme-toggle {
@@ -445,8 +455,125 @@ body.work {
     
 }
 
+/* Contact Form Styles */
+.contact-section {
+  padding: 40px 20px 100px;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 60px;
+}
 
+.form-block {
+  align-self: stretch;
+  padding: 30px 40px;
+  background: var(--form-bg);
+  border-radius: 20px;
+}
 
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+}
 
+.form-inputs {
+  width: 271px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
+.form-line {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-line label {
+  color: var(--form-text);
+  font-size: 16px;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 400;
+}
+
+.recipient span {
+  color: var(--form-text-secondary);
+  font-size: 16px;
+  font-family: 'Roboto Mono', monospace;
+  text-decoration: underline;
+}
+
+.recipient a {
+  color: var(--form-text-secondary);
+  font-size: 16px;
+  font-family: 'Roboto Mono', monospace;
+  text-decoration: underline;
+}
+
+.recipient a:hover {
+  opacity: 0.8;
+}
+
+.dropdown select,
+.form-line input {
+  padding: 4px 10px;
+  background: var(--form-bg);
+  border: none;
+  border-bottom: 1px solid var(--input-border);
+  font-family: 'Roboto Mono', monospace;
+  font-size: 16px;
+  color: var(--form-text);
+}
+
+.submit-button {
+  width: 151px;
+  padding: 5px 10px;
+  background: var(--button-bg);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.20);
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--form-text);
+}
+
+.chat-emoji {
+  position: absolute;
+  right:10px;
+  top: 30px;
+  font-size: 42px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.social-links {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.social-links a {
+  color: var(--form-text-secondary);
+  font-size: 14px;
+  font-family: Roboto, sans-serif;
+  text-decoration: none;
+  line-height: 18px;
+}
+
+.social-links a:hover {
+  text-decoration: underline;
+}
+
+/* Update SVG color in submit button for dark mode */
+body.dark-mode .submit-button svg path {
+  stroke: var(--form-text);
+}
 /* #endregion */
