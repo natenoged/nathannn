@@ -213,6 +213,7 @@ body.work {
     border-radius: 3px;
     border: none;
     cursor: pointer;
+    color: var(--text-primary); /* Add this line to ensure consistent text color */
 }
 
 .filter-controls button.active {
@@ -528,6 +529,9 @@ body.work {
   font-family: 'Roboto Mono', monospace;
   font-size: 16px;
   color: var(--form-text);
+  border-radius: 0; /* Add this to remove Safari's default border radius */
+  -webkit-appearance: none; /* Add this to remove Safari's default styling */
+  appearance: none; /* Add this for cross-browser consistency */
 }
 
 .submit-button {
@@ -544,6 +548,9 @@ body.work {
   font-size: 16px;
   cursor: pointer;
   color: var(--form-text);
+  white-space: nowrap; /* Add this to prevent text wrapping */
+  justify-content: center; /* Add this to center the text and icon */
+  min-width: 151px; /* Change width to min-width */
 }
 
 .chat-emoji {
