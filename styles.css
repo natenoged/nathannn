@@ -67,6 +67,10 @@ body {
     text-decoration: none;
 }
 
+.nav-link:visited {
+    color: #800080; /* Classic purple */
+}
+
 .menu-icon,
 .icon {
     width: 20px;
@@ -157,8 +161,7 @@ transition: transform 0.3s ease; /* Add transition */
     background: var(--clear);
     cursor: pointer;
     text-decoration: underline;
-    text-decoration-color: var(--nav-link);
-}
+    }
 
 .home .nav-item.first-item {
     border-top: none;
@@ -190,6 +193,7 @@ transition: transform 0.3s ease; /* Add transition */
     align-items: center;
     gap: 10px;
     opacity: 0;
+    text-decoration: none
 }
 
 /* #endregion */
