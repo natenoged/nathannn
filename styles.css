@@ -534,23 +534,36 @@ body.work {
   appearance: none; /* Add this for cross-browser consistency */
 }
 
+.dropdown select {
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    background-size: 16px;
+    padding-right: 24px;
+}
+
+/* Add dark mode support for the dropdown arrow */
+body.dark-mode .dropdown select {
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+}
+
 .submit-button {
-  width: 151px;
-  padding: 5px 10px;
+  
+  padding: 8px 16px;  /* Adjust padding to be more compact */
   background: var(--button-bg);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.20);
   border: none;
   border-radius: 5px;
-  display: flex;
+  display: inline-flex;  /* Change to inline-flex */
   align-items: center;
-  gap: 10px;
+  justify-content: center;
   font-family: 'Roboto Mono', monospace;
   font-size: 16px;
+  font-weight: 400;
   cursor: pointer;
   color: var(--form-text);
   white-space: nowrap; /* Add this to prevent text wrapping */
-  justify-content: center; /* Add this to center the text and icon */
-  min-width: 151px; /* Change width to min-width */
+  /* Remove min-width to let it hug the content */
 }
 
 .chat-emoji {
