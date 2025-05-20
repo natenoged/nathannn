@@ -102,8 +102,17 @@ body.home {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   padding: 20px;
+}
+
+@media (min-width: 768px) {
+    body.home {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
 
@@ -117,7 +126,24 @@ body.home {
     display: inline-flex;
     align-items: center;
     gap: 15px;
-    margin: 0 0 15px;
+    margin: 0 0 25px;
+}
+
+.home .blocks-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .home .blocks-flex {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
 }
 
 .profile-pic,
@@ -137,6 +163,7 @@ transition: transform 0.3s ease; /* Add transition */
     font-size: 14px;
 }
 .home .nav-menu {
+    height: 100%;
     width: 100%;
     max-width: 340px;
     border-radius: 10px;
@@ -156,6 +183,7 @@ transition: transform 0.3s ease; /* Add transition */
 
 .home .nav-link-item:hover, .nav-item:hover {
     background: var(--clear);
+    
     cursor: pointer;
 }
 
@@ -482,13 +510,13 @@ body.work {
 
 /* Contact Form Styles */
 .contact-section {
-  padding: 40px 20px 100px;
+  padding: 0px 20px;
   position: relative;
   display: inline-flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  gap: 60px;
+  gap: 40px;
 }
 
 .form-block {
@@ -564,6 +592,7 @@ body.work {
     background-position: right 4px center;
     background-size: 16px;
     padding-right: 24px;
+    cursor: pointer;
 }
 
 /* Add dark mode support for the dropdown arrow */
@@ -588,12 +617,19 @@ body.dark-mode .dropdown select {
   color: var(--form-text);
   white-space: nowrap; /* Add this to prevent text wrapping */
   /* Remove min-width to let it hug the content */
+  transition: all 0.12s ease;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.25);
+    filter: saturate(2.2);
 }
 
 .chat-emoji {
   position: absolute;
   right:10px;
-  top: 30px;
+  top: -10px;
   font-size: 42px;
   font-family: 'Roboto Mono', monospace;
 }
