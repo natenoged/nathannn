@@ -485,7 +485,9 @@ body.work {
 .nav-item,
 .submenu-content .nav-link-item {
     opacity: 0;
+    animation: fadeIn 0.4s ease-out forwards;
 }
+
 
 /* #endregion */
 /* #region Media Queries*/
@@ -626,12 +628,16 @@ body.dark-mode .dropdown select {
     filter: saturate(2.2);
 }
 
-.chat-emoji {
+img.chat-emoji {
   position: absolute;
-  right:10px;
+  right: 10px;
   top: -10px;
-  font-size: 42px;
-  font-family: 'Roboto Mono', monospace;
+  cursor: pointer;
+  
+}
+
+img.chat-emoji:active {
+  transform: rotate(-10deg) scale(0.95)!important;
 }
 
 .social-links {

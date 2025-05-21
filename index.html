@@ -111,7 +111,7 @@
         </button>
       </form>
     </div>
-<img class="chat-emoji" src="assets/icons/mailbox.gif" alt="Mailbox emoji" onclick="toggleMailbox(this)">
+<img class="chat-emoji" src="/assets/icons/mailbox.gif" alt="Mailbox emoji" onclick="toggleMailbox(this)">
     <div class="social-links">
       <a href="https://www.instagram.com/nathannadlernir" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.linkedin.com/in/natenoged/" target="_blank" rel="noopener">Linkedin</a>
@@ -126,7 +126,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         // Combined animations
         const fadeElements = document.querySelectorAll(
-            ".profile-card, .nav-item, .submenu-content .nav-link-item, .section-title, .window, .form-block, .chat-emoji, .social-links"
+            ".chat-emoji, .profile-card, .nav-item, .submenu-content .nav-link-item, .section-title, .window, .form-block, .social-links"
         );
         const growElements = document.querySelectorAll(".profile-image, .icon");
 
@@ -142,13 +142,12 @@
             item.style.animationDelay = `${index * 0.05}s`;
         });
     });
-
   function toggleMailbox(element) {
     const currentSrc = element.src;
     if (currentSrc.includes('mailbox.gif')) {
-      element.src = 'assets/icons/mailbox2.gif';
+      element.src = '/assets/icons/mailbox2.gif';
     } else {
-      element.src = 'assets/icons/mailbox.gif';
+      element.src = '/assets/icons/mailbox.gif';
     }
   }
   </script>
