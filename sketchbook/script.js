@@ -27,6 +27,7 @@ const webpFiles = [
     '80_2.webp',
     '80_3.webp',
     'A5.webp',
+    'Around.webp',
     'BNOCS copy.webp',
     'Castle_v008.webp',
     'Castle_v011 copy.webp',
