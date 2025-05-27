@@ -1,19 +1,25 @@
-// Theme toggle functionality
+// Theme management
 document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('theme-toggle');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    // Initialize theme based on localStorage or system preference
-    if (localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && prefersDark)) {
+    // Check initial system preference
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.body.classList.add('dark-mode');
-        themeToggle.textContent = '🌖';
     }
     
-    // Toggle theme on click
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDark);
-        themeToggle.textContent = isDark ? '🌖' : '🌒';
+    // Listen for changes in system theme
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (e.matches) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    });
+
+    // Add keyboard shortcut for testing (Ctrl+Alt+D)
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'd') {
+            document.body.classList.toggle('dark-mode');
+            // Prevent default browser behavior
+            e.preventDefault();
+        }
     });
 });
