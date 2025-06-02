@@ -86,19 +86,19 @@
       <!--Contact-->
       <div class="contact-section">
     <div class="form-block">
-      <form class="contact-form" action="https://formspree.io/f/xqaqjpej" method="POST">
+      <form class="contact-form fs-form" action="https://formspree.io/f/xqaqjpej" method="POST">
         <div class="form-inputs">
-          <div class="form-line">
-            <label>To:</label>
+          <div class="form-line fs-field">
+            <label class="fs-label">To:</label>
             <div class="recipient">
               <a href="mailto:nathan.nadlernir@gmail.com">nathan.nadlernir@gmail.com</a>
             </div>
           </div>
           
-          <div class="form-line">
-            <label>I want a</label>
+          <div class="form-line fs-field">
+            <label class="fs-label">I want a</label>
             <div class="dropdown">
-              <select name="service">
+              <select name="service" class="fs-input">
                 <option value="website">Website</option>
                 <option value="video">Video</option>
                 <option value="quote">Quote</option>
@@ -108,13 +108,13 @@
             </div>
           </div>
 
-          <div class="form-line">
-            <label>Signed,</label>
-            <input type="email" name="_replyto" placeholder="Your email address" required>
+          <div class="form-line fs-field">
+            <label class="fs-label">Signed,</label>
+            <input type="email" name="email" class="fs-input" placeholder="Your email address" required>
           </div>
         </div>
 
-        <button type="submit" name="submit" class="submit-button">
+        <button type="submit" class="submit-button fs-button">
           Get in touch
         </button>
       </form>
