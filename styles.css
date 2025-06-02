@@ -95,6 +95,47 @@ body {
     background-color: var(--Smoke);
     opacity: 1;
 }
+
+.breadcrumb-link-block {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: 'Roboto Mono', monospace;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: #ffffff;
+    box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.132);
+    border: 0px solid #00000044;
+    border-radius: 3px;
+    text-decoration: none;
+    z-index: 999;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 400;
+  }
+  
+  .breadcrumb-link-text{
+opacity: 60%;
+color: #0000ff;
+
+  }
+
+  .breadcrumb-link-text:hover{ 
+    text-decoration: underline;
+    opacity: 100%;
+}
+
+  .breadcrumb-link-arrow,
+  .breadcrumb-link-description {
+    
+    word-wrap: break-word;
+  }
+
+
+
 /* #endregion */
 /* #region Home specific */
 
@@ -362,6 +403,26 @@ body.work {
 }
 
 /* #endregion */
+
+/* #region About Page Specific */
+.about {
+    margin: auto;
+    max-width: 600px;
+}
+.about-p {
+    margin:30px 15px;
+   
+}
+
+.about p {
+    margin-bottom: 2em;
+}
+
+.about .breadcrumb-link-block {
+    position: relative;
+}
+/* #endregion */
+
 /* #region Modal Styles*/
 .modal {
     display: none;
@@ -663,3 +724,17 @@ body.dark-mode .submit-button svg path {
   stroke: var(--form-text);
 }
 /* #endregion */
+
+
+.toolkit iframe {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}
+
+.toolkit {
+    max-width: none;
+}
+
+
