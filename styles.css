@@ -201,6 +201,7 @@ transition: transform 0.3s ease; /* Add transition */
 }
 
 .profile-info{
+    font-family:'Roboto', monospace;
     font-size: 14px;
 }
 .home .nav-menu {
@@ -579,7 +580,7 @@ body.work {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  gap: 40px;
+  gap: 30px;
 }
 
 .form-block {
@@ -702,9 +703,11 @@ img.chat-emoji:active {
 }
 
 .social-links {
-  display: flex;
-  justify-content: flex-end;
-  gap: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    row-gap: 10px;
+    flex-wrap: wrap; /* Add this line */
 }
 
 .social-links a {
