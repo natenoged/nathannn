@@ -408,10 +408,12 @@ body.work {
 /* #region About Page Specific */
 .about {
     margin: auto;
-    max-width: 600px;
+    max-width: 500px;
 }
 .about-p {
-    margin:30px 15px;
+    margin:40px 15px;
+    line-height: 140%;
+
    
 }
 
