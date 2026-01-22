@@ -1,9 +1,9 @@
 // Theme management
 document.addEventListener('DOMContentLoaded', () => {
     // Check initial system preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark-mode');
-    }
+    //if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+       // document.body.classList.add('dark-mode');
+    //}
     
     // Listen for changes in system theme
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

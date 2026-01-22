@@ -16,21 +16,24 @@
   <link rel="stylesheet" href="/styles.css">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <script src="/theme.js" defer></script>
+  
 </head>
 <body class="home">
 
             
-      <!-- Profile Card -->
-  <div class="profile-card">
-  <img class="profile-image" src="/assets/jpg/profile-40.jpg" alt="Nathan">
-  <div class="profile-info">
-    Hi, I'm Nathan Nadler-Nir,<br>a creative technician & thing-maker
-  </div>
-  </div>
+<div class="box">     
       
   <div class="blocks-flex">
+    <!-- Profile Card -->
+      <div class="profile-card">
+      <img class="profile-image" src="/assets/jpg/profile-40.jpg" alt="Nathan">
+      <div class="profile-info">
+        Hi, I'm Nathan Nadler-Nir,<br>a creative technician & thing-maker
+      </div>
+      </div>
+
       <!-- Navigation -->
-      <nav class="nav-menu" aria-label="Main navigation">
+      <nav class="nav-menu" aria-label="Main navigation" style="margin-bottom: 20px;">
   <a href="work/" class="nav-item first-item">
     <span class="icon-wrapper">
       <img class="icon" src="/assets/icons/star.svg" alt="" aria-hidden="true">
@@ -94,9 +97,24 @@
 -->
   </nav>
 
-      <!--Contact-->
       
-      <div class="contact-section">
+
+  </div>
+
+<div class ="blocks-flex" style="align-items: center; max-width: 350px; gap: 20px;">
+  <div class="reel-link" onclick="toggleVideo(this)" style="position: relative; cursor: pointer;">
+  <div class="play-overlay">
+    <div class="play-button-icon"></div>
+  </div>
+
+  <video id="motionReel" loop muted playsinline style="width: 100%; height: auto; display: block; object-fit: cover; border-radius: 16px;">
+    <source src="/assets/motionreel.webm" type="video/webm">
+  </video>
+</div>
+
+  <!--Contact-->
+      
+      <div class="contact-section" style="padding: 0;">
         
     <div class="form-block">
       <form class="contact-form fs-form" action="https://formspree.io/f/xqaqjpej" method="POST">
@@ -132,9 +150,11 @@
           Get in touch
         </button>
       </form>
+
+
     </div>
-<img class="chat-emoji" src="/assets/icons/mailbox.gif" alt="Mailbox emoji" onclick="toggleMailbox(this)">
-    <div class="social-links">
+
+    <div class="social-links" >
       <a href="https://www.instagram.com/nathannadlernir" target="_blank" rel="noopener">Insta</a>
       <a href="https://www.linkedin.com/in/natenoged/" target="_blank" rel="noopener">Linkedin</a>
       <a href="https://www.youtube.com/@Natenoged" target="_blank" rel="noopener">YouTube</a>
@@ -142,15 +162,17 @@
       <a href="https://github.com/natenoged" target="_blank" rel="noopener">Github</a>
       <a href="https://buymeacoffee.com/natenoged" target="_blank" rel="noopener">💗 Buy me a coffee</a>
     </div>
+<img class="chat-emoji" src="/assets/icons/mailbox.gif" alt="Mailbox emoji" onclick="toggleMailbox(this)">
+    
   </div>
-
-  </div>
+</div>
+</div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
         // Combined animations
         const fadeElements = document.querySelectorAll(
-            ".chat-emoji, .profile-card, .nav-item, .submenu-content .nav-link-item, .section-title, .window, .form-block, .social-links"
+            ".chat-emoji, .profile-card, .nav-item, .submenu-content .nav-link-item, .section-title, .window, .form-block, .social-links, .reel-link"
         );
         const growElements = document.querySelectorAll(".profile-image, .icon");
 
@@ -174,6 +196,18 @@
       element.src = '/assets/icons/mailbox.gif';
     }
   }
+
+  function toggleVideo(container) {
+    const video = container.querySelector('video');
+    if (video.paused) {
+      video.play();
+      container.classList.add('playing');
+    } else {
+      video.pause();
+      container.classList.remove('playing');
+    }
+  }
+
   </script>
 
   <script type="application/ld+json">
