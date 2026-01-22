@@ -178,15 +178,38 @@ body.home {
     
     width: 100%;
     max-width: 320px;
-    background: var(--form-bg);
-    border-radius: 10px;
+    background: var(--clear);
+    border-radius: 10px 10px 0px 0px;
+    border: 1px solid var(--form-bg);
     padding: 15px;
     display: inline-flex;
     align-items: center;
     gap: 15px;
-    margin: 0 0 25px;
 }
 
+.home .status {
+    width: 100%;
+    max-width: 320px;
+    background: var(--form-bg);
+    border-radius: 0px 0px 10px 10px;
+    border: 1px solid var(--form-bg);
+    padding: 8px 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+}
+.home .status-text {
+    opacity: 0.65;
+    text-align: center;
+}
+
+.home .status-text a {
+    color: var(--nav-link);
+    text-decoration: none;
+}
 .home .blocks-flex {
     display: flex;
     flex-direction: column;
