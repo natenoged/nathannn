@@ -784,7 +784,7 @@ img.chat-emoji:active {
 
 .social-links a {
   color: var(--form-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   font-family: Roboto, sans-serif;
   text-decoration: none;
   line-height: 18px;
