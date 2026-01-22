@@ -188,14 +188,12 @@ body.home {
 }
 
 .home .status {
-    width: 100%;
-    max-width: 320px;
     background: var(--form-bg);
     border-radius: 0px 0px 10px 10px;
     border: 1px solid var(--form-bg);
-    padding: 8px 15px;
+    padding: 8px;
     display: inline-flex;
-    align-items: center;
+    justify-content: center;
     gap: 10px;
     margin-bottom: 25px;
     font-family: 'Roboto Mono', monospace;
