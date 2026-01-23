@@ -502,9 +502,10 @@ body.work {
 }
 
 .about-p {
-    max-width: 520px;
+    max-width: 600px;
     margin:40px 15px;
     line-height: 140%;
+    opacity: 0.8;
 
 }
 
