@@ -6,6 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About Nathan</title>
     <link rel="stylesheet" href="/styles.css">
+
+  <style>
+    /* 1. Set initial state to invisible */
+    body { 
+      opacity: 0; 
+      transition: opacity 0.6s ease-in-out; 
+    }
+    /* 2. Style to apply via JavaScript */
+    body.loaded { 
+      opacity: 1; 
+    }
+  </style>
+
+  <script>
+    // 3. Add the 'loaded' class once the window is ready
+    window.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('loaded');
+    });
+  </script>
+
   </head>
   <body class="about">
 
@@ -19,16 +39,14 @@
 <p>Hi, I'm Nathan Nadler-Nir
 <br>a designer, filmmaker, and creative technologist building digital gardens.</p>
 <p>I work across media, from video, illustration and 3D to UX/UI and Web. Whether I'm shaping a brand, producing a documentary, or sketching out a product, I always put people at the center of the process.</p>
-<p>Over the years, I have:
-<br>
-<br>🎬 Produced mountains of <a href="https://nathannn.com/work/#video">film & video</a> content with companies, collaborators & arts festivals
-<br>
-<br>🚀 Led the creative strategy of South African tech startups like Momint and Dado  
-<br>
-<br>💻 Developed custom <a href="https://nathannn.com/work/#web">web experiences</a> for international clients
-<br>
-<br>🧠 Specialized in creative execution, story structure, and productivity systems (I 💖 Notion)</p>
-<p>My practice balances creative problem solving with the joy of experimentation, it's grounded in collaboration, fuelled by curiosity, and informed by a lifelong obsession with <a href="https://nathannn.com/toolkit">digital tools</a>.
+Over the years, I have:
+<ul>
+<li>Produced mountains of <a href="/work/#video">video</a> content with companies, collaborators & arts festivals
+<li>Led the creative strategy of South African tech startups like Momint and Dado  
+<li>Developed custom <a href="/work/#web">web experiences</a> for international clients
+<li>Specialized in creative execution, story structure, and productivity systems <br>(I 💖 Notion)</p>
+</ul>
+<p>My practice balances creative problem solving with the joy of experimentation, it's grounded in collaboration, fuelled by curiosity, and informed by a lifelong obsession with <a href="/toolkit">digital tools</a>.
 <br>
   <br> Want to collaborate? Mail me: </p>
 </div>
@@ -70,9 +88,8 @@
         </button>
       </form>
     </div>
-<img class="chat-emoji" src="/assets/icons/mailbox.gif" alt="Mailbox emoji" onclick="toggleMailbox(this)">
     <div class="social-links">
-      <a href="https://www.instagram.com/nathannadlernir" target="_blank" rel="noopener">Insta</a>
+      <a href="https://www.instagram.com/nathannadlernir" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.linkedin.com/in/natenoged/" target="_blank" rel="noopener">Linkedin</a>
       <a href="https://www.youtube.com/@Natenoged" target="_blank" rel="noopener">YouTube</a>
       <a href="https://substack.com/@natenoged" target="_blank" rel="noopener">Substack</a>

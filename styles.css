@@ -477,13 +477,26 @@ body.work {
 /* #region About Page Specific */
 .about {
     margin: auto;
-    max-width: 500px;
+    max-width: 600px;
+    margin-top: 40px;
 }
 .about-p {
     margin:40px 15px;
     line-height: 140%;
 
-   
+}
+
+.about-p ul {
+    padding-left: 15px;
+}
+
+.about-p li {
+    margin-bottom: 10px;
+}
+
+.about-p a {
+    color: var(--nav-link);
+    text-decoration: none;
 }
 
 .about p {
@@ -493,6 +506,41 @@ body.work {
 .about .breadcrumb-link-block {
     position: relative;
 }
+
+
+
+.about .contact-section {
+  padding: 15px;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: left;
+  gap: 20px;
+  
+}
+
+.about .form-block {
+  align-self: left;
+  padding: 0;
+  background: var(--bg);
+}
+
+.about .contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: start;
+  margin-bottom: 40px;
+}
+
+.about .form-line {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  gap: 10px;
+}
+
+
 /* #endregion */
 
 /* #region Modal Styles*/
