@@ -886,4 +886,14 @@ body.dark-mode .submit-button svg path {
     max-width: none;
 }
 
+.store iframe {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}
+
+.store {
+    max-width: none;
+}
 
