@@ -482,7 +482,7 @@ body.work {
 /* #region About Page Specific */
 .about {
     margin: auto;
-    margin-top: 40px;
+    
 }
 
 .about .box {
@@ -495,17 +495,21 @@ body.work {
 @media (min-width: 768px) {
     .about .box {
         display: flex;
-        flex-direction: row-reverse;
+        flex-direction: row;
         align-items: top;
         gap: 0px;
     }
 }
 
 .about-p {
-    max-width: 600px;
+    max-width: 520px;
     margin:40px 15px;
     line-height: 140%;
 
+}
+
+.about .blocks-flex {
+    padding-top: 40px;
 }
 
 .about-p ul {
