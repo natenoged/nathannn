@@ -117,6 +117,8 @@
         // renderPortfolio function with lazy loading
         function renderPortfolio(items) {
             portfolioGrid.innerHTML = '';
+            portfolioGrid.classList.add('loaded'); // Add this lines
+            filterControls.classList.add('loaded'); // Add this lines
             items.forEach((item, index) => {
                 const portfolioItem = document.createElement('div');
                 portfolioItem.className = 'portfolio-item';
@@ -352,6 +354,9 @@
             filterControls.style.visibility = 'visible';
         }
 
+
+
+        
         // Initialize portfolio
         async function initPortfolio() {
             try {
