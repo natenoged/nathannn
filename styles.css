@@ -486,14 +486,15 @@ body.work {
 }
 
 .about .box {
+    position: relative;
     display: flex;
-        flex-direction: column-reverse;
-        align-items: top;
-        gap: 20px;
+    flex-direction: column-reverse;
+
 }
 
 @media (min-width: 768px) {
     .about .box {
+        position: relative;
         display: flex;
         flex-direction: row;
         align-items: top;
@@ -501,8 +502,31 @@ body.work {
     }
 }
 
+
+
+.about model-viewer {
+  
+  position: absolute;
+  width: 90vh;
+  height: 90vh;
+  right: -15vh;
+    background-color: transparent;
+}
+
+@media (max-width: 768px) {
+.about model-viewer {
+  
+  position: relative;
+    width: 100vw;
+  height: 100vw;
+  right: 0;
+    
+}
+}
+
 .about-p {
     max-width: 550px;
+    min-width: 550px;
     margin:40px 15px;
     line-height: 140%;
     color: var(--text-secondary);
