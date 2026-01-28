@@ -346,7 +346,7 @@ transition: transform 0.3s ease; /* Add transition */
 /* #endregion */
 /* #region Portfolio Page Specific */
 body.work {
-  padding: 20px 20px;
+  padding: 60px 20px;
 }
 
 .work .breadcrumb-link-block{
@@ -354,7 +354,6 @@ body.work {
     top: 0;
     left: 0;
     margin-bottom: 20px;
-    margin-top: 60px;
 }
 
 
@@ -388,6 +387,7 @@ body.work {
     content: '';
     position: absolute;
     width: 1200px;
+    max-width: 100%;
     height: 100%;
     background: #00000007;
     z-index: -10;
@@ -659,25 +659,26 @@ body.work {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(255, 255, 255, 0.928);
+    background-color: rgb(255, 255, 255);
 }
 
 .modal-content {
     background-color: var(--clear);
-    margin: 10% auto;
-    padding: 15px;
+    margin: auto auto;
+    padding: 60px 15px;
     border-radius: 3px;
-    width: 80%;
-    max-width: 600px;
+    max-width: 700px;
     text-align: left;
 }
 
 .close {
     color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 14px;
     cursor: pointer;
-    margin-left: auto;
+    margin-bottom: 40px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 .close:hover,
@@ -700,12 +701,15 @@ body.work {
     border-radius: 3px;
     margin-bottom: 10px;
     background-color: #f0f0f0;
+    outline: 2px solid rgba(0, 0, 0, 0.084);
+    outline-offset: -1.5px;
+    box-shadow:inset 0 0 6px #ffffff51
 }
 
 #modalDescription {
-    font-size: 14px;
     line-height: 1.6;
     color: var(--text-secondary);
+    margin-bottom: 30px;
 }
 
 #modalHeader {

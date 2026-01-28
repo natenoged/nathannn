@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/styles.css">
     
+    
 </head> 
 
 <a href="/" class="breadcrumb-link-block">
@@ -28,13 +29,15 @@
 
     <div id="portfolioModal" class="modal">
         <div class="modal-content">
+            <div class="close">&lt; work</div>
             <div id="modalHeader">
                 <h3 id="modalPortfolioName"></h3>
                 <div id="modalPortfolioTags" class="portfolio-tags"></div>
-                <span class="close">&times;</span>
+                
             </div>
-            <div id="modalVideoContainer"></div>
+            
             <div id="modalDescription"></div>
+            <div id="modalVideoContainer"></div>
         </div>
     </div>
 
@@ -191,6 +194,11 @@
             const modalDescription = document.getElementById('modalDescription');
             const modalPortfolioName = document.getElementById('modalPortfolioName');
             const modalPortfolioTags = document.getElementById('modalPortfolioTags');
+
+        
+            const projectSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            history.replaceState(null, '', `/work/#${projectSlug}`);  // ✅ CHANGED pushState to replaceState
+
             const closeButton = modal.querySelector('.close');
             const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
             const firstFocusableElement = modal.querySelectorAll(focusableElements)[0];
@@ -276,22 +284,37 @@
 
             // Close modal and restore focus
             function closeModal() {
+
+                // Check if there was an active filter before the modal opened
+                const filterButtons = document.querySelectorAll('.filter-btn');
+                const activeFilter = Array.from(filterButtons).find(btn => btn.classList.contains('active'));
+                const activeFilterValue = activeFilter?.dataset.filter || 'all';
+                
+                // Return to the filter view that was active
+                if (activeFilterValue === 'all') {
+                    history.replaceState(null, '', '/work');  // ✅ Also fix this to replaceState
+                } else {
+                    history.replaceState(null, '', `/work/#${activeFilterValue}`);  // ✅ And this
+                }
                 modal.style.display = 'none';
                 modalVideoContainer.innerHTML = '';
                 modalDescription.innerHTML = '';
                 document.removeEventListener('keydown', handleKeydown);
+                window.removeEventListener('click', modalBackdropClick);  // ✅ CLEANUP ADDED
                 previouslyFocusedElement.focus();
             }
+                closeButton.onclick = closeModal;
 
-            closeButton.onclick = closeModal;
+                            // Store reference so we can remove it later
+                            const modalBackdropClick = (event) => {
+                                if (event.target === modal) {
+                                    closeModal();
+                                }
+                            };
+                            
+                            window.addEventListener('click', modalBackdropClick);  // ✅ Use addEventListener
 
-            window.onclick = (event) => {
-                if (event.target === modal) {
-                    closeModal();
-                }
-            };
-
-            document.addEventListener('keydown', handleKeydown);
+                            document.addEventListener('keydown', handleKeydown);
 
             // Set focus to the first focusable element in the modal
             firstFocusableElement.focus();
@@ -328,11 +351,11 @@
                 btn.addEventListener('click', function(e) {
                     const filter = this.dataset.filter;
                     
-                    // Update URL without triggering hashchange
+                    // Update URL - use pushState for browser history
                     if (filter === 'all') {
-                        history.replaceState(null, '', window.location.pathname);
+                        history.pushState(null, '', '/work');
                     } else {
-                        history.replaceState(null, '', `#${filter}`);
+                        history.pushState(null, '', `/work/#${filter}`);
                     }
 
                     // Update active state and filter items
@@ -383,20 +406,42 @@
 
         // Handle URL hash changes
         function handleHashChange() {
-            // Remove leading slash if present and get hash
             const hash = window.location.hash.replace(/^#?\/?/, '').toLowerCase();
-            const filterButtons = document.querySelectorAll('.filter-btn');
             
-            // Find matching filter button
-            const targetButton = Array.from(filterButtons).find(btn => 
-                btn.dataset.filter === hash || (hash === '' && btn.dataset.filter === 'all')
-            );
+            // Check if it's a filter or a project
+            const filterButton = document.querySelector(`[data-filter="${hash}"]`);
             
-            if (targetButton) {
-                targetButton.click();
+            if (filterButton) {
+                // It's a filter - click the button
+                if (!filterButton.classList.contains('active')) {
+                    filterButton.click();
+                }
             } else if (hash) {
+                // It's a project slug - find and open the modal
+                const matchingItem = allItems.find(item => {
+                    const itemSlug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                    return itemSlug === hash;
+                });
+                
+                if (matchingItem) {
+                    const tags = matchingItem.tags ? matchingItem.tags.split(',').map(tag => tag.trim()) : [];
+                    
+                    // Temporarily remove pushState from openModal to avoid double-pushing
+                    const originalHash = window.location.hash;
+                    openModal(matchingItem['external project link'], matchingItem.description, matchingItem.name, tags);
+                    // Restore hash if openModal changed it
+                    if (window.location.hash !== originalHash) {
+                        history.replaceState(null, '', originalHash);
+                    }
+                } else {
+                    // Invalid hash - go to all
+                    const allButton = document.querySelector('[data-filter="all"]');
+                    allButton?.click();
+                }
+            } else {
+                // No hash - show all
                 const allButton = document.querySelector('[data-filter="all"]');
-                allButton.click();
+                allButton?.click();
             }
         }
 
