@@ -354,7 +354,7 @@ body.work {
     top: 0;
     left: 0;
     margin-bottom: 20px;
-    margin-top: 80px;
+    margin-top: 60px;
 }
 
 
@@ -387,7 +387,7 @@ body.work {
 .portfolio-grid::before {
     content: '';
     position: absolute;
-    width: 100%;
+    width: 1200px;
     height: 100%;
     background: #00000007;
     z-index: -10;
