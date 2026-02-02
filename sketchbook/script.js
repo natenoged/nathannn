@@ -1,11 +1,3 @@
-
-// Auto-generated image list - DO NOT EDIT MANUALLY
-const basePath = 'Webp/';
-const webpFiles = [
-    // This will be populated by GitHub Actions
-];
-const fullPathWebpFiles = webpFiles.map(file => basePath + encodeURIComponent(file));
-
 // Counter to keep track of z-index for bringing images to the front
 let zIndexCounter = 1;
 
