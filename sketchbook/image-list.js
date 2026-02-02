@@ -50,7 +50,6 @@ const webpFiles = [
     "Frame 2.webp",
     "Frame 7.webp",
     "Gronklet copy.webp",
-    "Group 105.webp",
     "Group 106.webp",
     "Group 107.webp",
     "Group 24.webp",
