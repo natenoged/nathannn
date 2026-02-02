@@ -2,11 +2,9 @@
 const basePath = 'Webp/';
 const webpFiles = [
     "0.webp",
-    "000011 copy.webp",
     "000018 copy.webp",
     "000020 copy.webp",
     "000032 copy.webp",
-    "001.webp",
     "002.webp",
     "003.webp",
     "004.webp",
@@ -61,7 +59,6 @@ const webpFiles = [
     "Handwritten_2023-11-20_180447 (10).webp",
     "Handwritten_2023-11-20_180744 (12).webp",
     "Huggins-1 copy.webp",
-    "ISO_7010_W024 1.webp",
     "ITUNES2.webp",
     "Insta1.webp",
     "Insta2.webp",
@@ -80,7 +77,7 @@ const webpFiles = [
     "Psychic Damage Warning Sticker.svg",
     "Shirt Popup.webp",
     "Sklob_The Great copy 2.webp",
-    "Skullboy.jpg",
+    "Skullboy.webp",
     "Starjump pillars 4.webp",
     "Stellus Heretica.webp",
     "The Nighthelmets.webp",
