@@ -1,75 +1,64 @@
-// Counter to keep track of z-index for bringing images to the front
 let zIndexCounter = 1;
 
-// Function to create a draggable image container
 function createDraggableImage(src) {
     const container = document.createElement('div');
     container.className = 'image-container';
-
+    
     const img = document.createElement('img');
     img.src = src;
-    img.ondragstart = () => false;
-
-    const test = 150;
-    container.style.left = `${Math.random() * (window.innerWidth - test)}px`;
-    container.style.top = `${Math.random() * (window.innerHeight - test)}px`;
-    container.style.width = `${(test)}px`;
-    container.style.zIndex = zIndexCounter++;
-
-    container.addEventListener('mousedown', startDrag);
+    img.draggable = false;
+    
+    // Random position
+    const size = 150;
+    container.style.cssText = `
+        left: ${Math.random() * (window.innerWidth - size)}px;
+        top: ${Math.random() * (window.innerHeight - size)}px;
+        width: ${size}px;
+        z-index: ${zIndexCounter++};
+    `;
+    
+    // Show container only after image loads
+    img.onload = () => {
+        setTimeout(() => container.classList.add('loaded'), 100);
+    };
+    
+    container.onmousedown = startDrag;
     container.appendChild(img);
     document.body.appendChild(container);
-    
-    // Add slight delay before showing the container
-    setTimeout(() => {
-        container.classList.add('loaded');
-    }, 100);
 }
 
-// Function to load images sequentially with a delay
 function loadImagesSequentially() {
-    let index = 0; // Start with the first image
-
-    // Interval function to load images one by one
+    let index = 0;
     const interval = setInterval(() => {
         if (index < fullPathWebpFiles.length) {
-            createDraggableImage(fullPathWebpFiles[index]);
-            index++; // Move to the next image
+            createDraggableImage(fullPathWebpFiles[index++]);
         } else {
-            clearInterval(interval); // Stop when all images are loaded
+            clearInterval(interval);
         }
-    }, 40); // Adjust interval time (in milliseconds) for pacing
+    }, 40);
 }
 
-// Function to handle dragging of an image container
 function startDrag(e) {
+    if (e.target.tagName !== 'IMG') return;
+    
     const container = e.currentTarget;
-
-    // Bring the clicked container to the front
     container.style.zIndex = zIndexCounter++;
-
-    // Prevent dragging when resizing the container
-    if (e.target.tagName === 'IMG') {
-        const initialX = e.clientX - container.getBoundingClientRect().left;
-        const initialY = e.clientY - container.getBoundingClientRect().top;
-
-        // Function to move the container while dragging
-        const moveAt = (e) => {
-            container.style.left = `${e.clientX - initialX}px`;
-            container.style.top = `${e.clientY - initialY}px`;
-        };
-
-        // Stop dragging when the mouse is released
-        const onMouseUp = () => {
-            document.removeEventListener('mousemove', moveAt);
-            document.removeEventListener('mouseup', onMouseUp);
-        };
-
-        // Attach mousemove and mouseup listeners
-        document.addEventListener('mousemove', moveAt);
-        document.addEventListener('mouseup', onMouseUp);
-    }
+    
+    const startX = e.clientX - container.offsetLeft;
+    const startY = e.clientY - container.offsetTop;
+    
+    const moveAt = (e) => {
+        container.style.left = `${e.clientX - startX}px`;
+        container.style.top = `${e.clientY - startY}px`;
+    };
+    
+    const stopDrag = () => {
+        document.removeEventListener('mousemove', moveAt);
+        document.removeEventListener('mouseup', stopDrag);
+    };
+    
+    document.addEventListener('mousemove', moveAt);
+    document.addEventListener('mouseup', stopDrag);
 }
 
-// Load images when the page is fully loaded
 window.onload = loadImagesSequentially;

@@ -52,8 +52,6 @@ color: #0000ff;
     resize: both; /* Enable resizing in both directions */
     overflow: auto; /* Enable scrolling for overflow */
     border: 1px dashed #616161; /* Dashed border for visibility */
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-    backdrop-filter: blur(.8px);
     opacity: 0; /* Start with opacity 0 */
     transition: opacity 0.1s ease; /* Add smooth transition */
 }
