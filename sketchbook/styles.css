@@ -54,6 +54,7 @@ color: #0000ff;
     border: 1px dashed #616161; /* Dashed border for visibility */
     opacity: 0; /* Start with opacity 0 */
     transition: opacity 0.1s ease; /* Add smooth transition */
+    background-color: #ffffff78;
 }
 
 /* Add a class for loaded images */
