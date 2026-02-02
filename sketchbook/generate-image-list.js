@@ -4,8 +4,10 @@ const path = require('path');
 const webpFolder = path.join(__dirname, 'Webp');
 const outputFile = path.join(__dirname, 'image-list.js');
 
-// Read all files from the Webp folder
-const files = fs.readdirSync(webpFolder)
+// Read all files from the Webp folder (NOT subfolders)
+const files = fs.readdirSync(webpFolder, { withFileTypes: true })
+    .filter(dirent => dirent.isFile()) // Only files, not directories
+    .map(dirent => dirent.name)
     .filter(file => {
         const ext = path.extname(file).toLowerCase();
         return ['.webp', '.svg', '.jpg', '.jpeg', '.png'].includes(ext);
