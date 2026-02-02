@@ -45,21 +45,39 @@ color: #0000ff;
     word-wrap: break-word;
   }
 
+  .rotate-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    cursor: grab;
+    z-index: 10;
+}
+
+.rotate-handle:active {
+    cursor:grabbing;
+}
+
 /* Style for the draggable image container */
 .image-container {
     position: absolute; /* Position absolutely within the viewport */
     cursor: move; /* Change cursor to 'move' when hovering */
     resize: both; /* Enable resizing in both directions */
     overflow: auto; /* Enable scrolling for overflow */
-    border: 1px dashed #616161; /* Dashed border for visibility */
+    border: 1px dashed #616161b0; /* Dashed border for visibility */
     opacity: 0; /* Start with opacity 0 */
-    transition: opacity 0.1s ease; /* Add smooth transition */
+    transition: opacity 0.1s; /* Add smooth transition */
     background-color: #ffffff78;
+    box-shadow: 2px 4px 3px -3px rgba(0, 0, 0, 0.454);
+    scale: 93%;
+    transition: scale 0.08s ease-out; /* Add smooth transition */
 }
 
 /* Add a class for loaded images */
 .image-container.loaded {
     opacity: 1;
+    scale: 100%;
 }
 
 /* Style for the images within the container */
