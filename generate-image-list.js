@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const webpFolder = './Webp';
-const outputFile = './image-list.js';
+const webpFolder = path.join(__dirname, 'Webp');
+const outputFile = path.join(__dirname, 'image-list.js');
 
 // Read all files from the Webp folder
 const files = fs.readdirSync(webpFolder)

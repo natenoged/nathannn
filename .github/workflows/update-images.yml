@@ -2,8 +2,10 @@ name: Update Image List
 
 on:
   push:
+    branches:
+      - main  # Change to 'master' if that's your default branch
     paths:
-      - 'Webp/**'
+      - 'sketchbook/Webp/**'
   workflow_dispatch: # Allows manual trigger
 
 jobs:
@@ -20,11 +22,11 @@ jobs:
           node-version: '18'
           
       - name: Generate image list
-        run: node generate-image-list.js
+        run: node sketchbook/generate-image-list.js
         
       - name: Commit and push if changed
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add image-list.js
+          git add sketchbook/image-list.js
           git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-update image list [skip ci]" && git push)
