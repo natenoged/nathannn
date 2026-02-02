@@ -3,10 +3,10 @@ name: Update Image List
 on:
   push:
     branches:
-      - main  # Change to 'master' if that's your default branch
+      - main  # Change to 'master' if needed
     paths:
       - 'sketchbook/Webp/**'
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
   update:
@@ -20,9 +20,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+      
+      - name: Check files exist
+        run: |
+          ls -la sketchbook/
+          ls -la sketchbook/Webp/
           
       - name: Generate image list
-        run: node sketchbook/generate-image-list.js
+        working-directory: ./sketchbook
+        run: node generate-image-list.js
         
       - name: Commit and push if changed
         run: |
