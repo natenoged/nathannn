@@ -8,6 +8,9 @@ on:
       - 'sketchbook/Webp/**'
   workflow_dispatch:
 
+permissions:
+  contents: write  # This is the key addition!
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -21,11 +24,6 @@ jobs:
         with:
           node-version: '18'
       
-      - name: Check files exist
-        run: |
-          ls -la sketchbook/
-          ls -la sketchbook/Webp/
-          
       - name: Generate image list
         working-directory: ./sketchbook
         run: node generate-image-list.js
