@@ -72,6 +72,7 @@ const webpFiles = [
     "Nathans Room Hero copy.webp",
     "Newtenoged2.webp",
     "Peeps.webp",
+    "PersonalityQuiz.webp",
     "PhyllotaxisGalaxis.webp",
     "Psychic Damage Warning Sticker.svg",
     "Shirt Popup.webp",
