@@ -572,8 +572,9 @@ body.work {
 .about model-viewer {
   
   position: relative;
-    width: 100vw;
-  height: 100vw;
+    width: 100%;
+  height: auto;
+  aspect-ratio: 1;
   right: 0;
     
 }
@@ -586,6 +587,15 @@ body.work {
     line-height: 140%;
     color: var(--text-secondary);
 
+}
+
+@media (max-width: 768px) {
+    .about-p {
+        max-width: 100%;
+        min-width: auto;
+        margin: 20px 0;
+        padding: 0 15px;
+    }
 }
 
 .about .blocks-flex {
