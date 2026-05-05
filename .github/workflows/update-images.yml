@@ -3,34 +3,45 @@ name: Update Image List
 on:
   push:
     branches:
-      - main  # Change to 'master' if needed
+      - main
     paths:
       - 'sketchbook/Webp/**'
   workflow_dispatch:
 
 permissions:
-  contents: write  # This is the key addition!
+  contents: write
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Updated to v4 to fix the Node.js deprecation warning
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
+      # Updated to v4 and bumped Node to 20 or 22 for better compatibility
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-      
+          node-version: '20'
+
       - name: Generate image list
         working-directory: ./sketchbook
-        run: node generate-image-list.js
-        
+        run: |
+          # Adding an ls command helps you debug if the file is actually there
+          ls -R 
+          node generate-image-list.js
+
       - name: Commit and push if changed
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add sketchbook/image-list.js
-          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-update image list [skip ci]" && git push)
+          # This checks if there are changes before trying to commit
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "🤖 Auto-update image list [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi
