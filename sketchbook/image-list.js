@@ -58,6 +58,7 @@ const webpFiles = [
     "Handwritten_2023-11-20_180447 (10).webp",
     "Handwritten_2023-11-20_180744 (12).webp",
     "Huggins-1 copy.webp",
+    "ISO_7010_W024 1.webp",
     "ITUNES2.webp",
     "Insta1.webp",
     "Insta2.webp",
@@ -74,7 +75,6 @@ const webpFiles = [
     "Peeps.webp",
     "PersonalityQuiz.webp",
     "PhyllotaxisGalaxis.webp",
-    "Psychic Damage Warning Sticker.svg",
     "Shirt Popup.webp",
     "Sklob_The Great copy 2.webp",
     "Skullboy.webp",
@@ -91,6 +91,11 @@ const webpFiles = [
     "months.webp",
     "nate_2.webp",
     "noto2 copy.webp",
+    "scribblemania-1.webp",
+    "scribblemania-2.webp",
+    "scribblemania-3.webp",
+    "scribblemania-4.webp",
+    "scribblemania-5.webp",
     "untitled.webp",
     "yeahyougotthatYUMMI.webp"
 ];
