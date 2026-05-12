@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>parallax</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #e6e6e6;
+    overflow: hidden;
+    cursor: crosshair;
+    font-family: 'Courier New', monospace;
+  }
+
+  #stage {
+    position: fixed;
+    inset: 0;
+  }
+
+  /* anchor point at screen center */
+  #center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+  }
+
+/* 1. Change this selector */
+.layer {
+  position: absolute;
+  width: 70vmin;
+  height: 70vmin;
+  transform: translate(-50%, -50%);
+  
+  /* ADD THIS HERE instead of the img */
+  mix-blend-mode: darken; 
+}
+
+/* 2. Remove it from here */
+.layer img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+  #hint {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.3);
+    pointer-events: none;
+    white-space: nowrap;
+    transition: opacity 1s;
+  }
+
+  #counter {
+    position: fixed;
+    top: 1.5rem;
+    right: 2rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.2);
+    pointer-events: none;
+  }
+
+  .ripple {
+    position: fixed;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+    pointer-events: none;
+    animation: rippleOut 0.6s ease-out forwards;
+    transform: translate(-50%, -50%);
+  }
+  @keyframes rippleOut {
+    from { width: 0; height: 0; opacity: 1; }
+    to   { width: 100px; height: 100px; opacity: 0; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .layer { animation: fadeIn 0.4s ease-out both; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="center"></div>
+</div>
+<div id="hint">move mouse · scroll to deepen · click for new set</div>
+<div id="counter">set 001</div>
+
+<script>
+const IMAGES = Array.from({length: 7}, (_, i) => `Layer ${i + 1}.webp`);
+
+// How many pixels each layer shifts at full mouse deflection (front → back)
+let strengths = [45, 20, 7];
+
+const center  = document.getElementById('center');
+const hint    = document.getElementById('hint');
+const counter = document.getElementById('counter');
+
+let mx = 0, my = 0;   // raw normalised mouse -1 .. 1
+let cx = 0, cy = 0;   // smoothed current
+let layers = [];
+let clickCount = 1;
+
+/* ── helpers ── */
+function pickThree() {
+  const pool = [...IMAGES];
+  const out = [];
+  while (out.length < 3 && pool.length) {
+    const i = Math.floor(Math.random() * pool.length);
+    out.push(pool.splice(i, 1)[0]);
+  }
+  return out;
+}
+
+function spawnLayers(imgs) {
+  layers.forEach(l => l.el.remove());
+  layers = [];
+  imgs.forEach((src, i) => {
+    const el = document.createElement('div');
+    el.className = 'layer';
+    el.style.animationDelay = `${i * 0.07}s`;
+    el.style.zIndex = 3 - i;
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    el.appendChild(img);
+    center.appendChild(el);
+
+    layers.push({ el, idx: i });
+  });
+}
+
+/* ── input ── */
+document.addEventListener('mousemove', e => {
+  mx = (e.clientX / window.innerWidth  - 0.5) * 2;   // -1 .. 1
+  my = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+// Mobile accelerometer support
+function initAccelerometer() {
+  // Request permission for iOS 13+
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission()
+      .then(permission => {
+        if (permission === 'granted') {
+          window.addEventListener('deviceorientation', handleDeviceOrientation);
+        }
+      })
+      .catch(console.error);
+  } else if (typeof DeviceOrientationEvent !== 'undefined') {
+    // Non-iOS devices
+    window.addEventListener('deviceorientation', handleDeviceOrientation);
+  }
+}
+
+function handleDeviceOrientation(event) {
+  // beta: rotation around x-axis (-180 to 180), front-back tilt
+  // gamma: rotation around y-axis (-90 to 90), left-right tilt
+  const beta = event.beta || 0;   // front-back
+  const gamma = event.gamma || 0; // left-right
+  
+  // Normalize to -1 .. 1 range
+  mx = gamma / 90;   // left-right tilt maps to x
+  my = beta / 180;   // front-back tilt maps to y
+}
+
+// Try to initialize accelerometer on touch devices
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+  // Add a tap-to-enable message for iOS
+  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    const enableAccel = document.createElement('div');
+    enableAccel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.8);color:white;padding:2rem;border-radius:0.5rem;text-align:center;font-size:0.9rem;z-index:9999;cursor:pointer;';
+    enableAccel.textContent = 'tap to enable motion controls';
+    document.body.appendChild(enableAccel);
+    enableAccel.addEventListener('click', () => {
+      initAccelerometer();
+      enableAccel.remove();
+    });
+  } else {
+    initAccelerometer();
+  }
+}
+
+// scroll → scale up parallax spread so layers visibly separate
+document.addEventListener('wheel', e => {
+  const delta = e.deltaY > 0 ? 1.08 : 0.93;
+  strengths = strengths.map((s, i) => {
+    const base = [45, 20, 7][i];
+    const next = s * delta;
+    return Math.max(base * 0.3, Math.min(base * 4, next));
+  });
+}, { passive: true });
+
+document.addEventListener('click', e => {
+  // ripple
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  r.style.left = e.clientX + 'px';
+  r.style.top  = e.clientY + 'px';
+  document.body.appendChild(r);
+  r.addEventListener('animationend', () => r.remove());
+
+  spawnLayers(pickThree());
+  clickCount++;
+  counter.textContent = `set ${String(clickCount).padStart(3, '0')}`;
+  hint.style.opacity = '0';
+  setTimeout(() => hint.style.opacity = '1', 3000);
+});
+
+/* ── render loop ── */
+function tick() {
+  cx += (mx - cx) * 0.08;
+  cy += (my - cy) * 0.08;
+
+  layers.forEach(l => {
+    const s  = strengths[l.idx];
+    const dx = cx * s;
+    const dy = cy * s;
+    l.el.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  });
+
+  requestAnimationFrame(tick);
+}
+
+spawnLayers(pickThree());
+tick();
+</script>
+</body>
+</html>
