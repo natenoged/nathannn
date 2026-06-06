@@ -275,6 +275,7 @@ transition: transform 0.3s ease; /* Add transition */
 .profile-info{
     font-family:'Roboto', monospace;
     font-size: 14px;
+    line-height: 18px;
 }
 .home .nav-menu {
     height: 100%;
