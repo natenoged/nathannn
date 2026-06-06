@@ -826,50 +826,52 @@ body.work {
 }
 
 .form-block {
-  align-self: stretch;
-  padding: 30px 40px;
-  background: var(--form-bg);
-  border-radius: 20px;
+  width: 290px;
+  padding: 30px 30px 30px;
+  background: var(--clear);
+  border-radius: 10px;
+  border: 1px solid var(--form-bg);
 }
 
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  align-items: center;
+  gap: 25px;
+ 
+  align-content: left;
 }
 
 .form-inputs {
-  width: 271px;
+  width: auto;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
 }
 
 .form-line {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   gap: 10px;
 }
 
 .form-line label {
   color: var(--form-text);
-  font-size: 16px;
+  font-size: 15px;
   font-family: 'Roboto Mono', monospace;
   font-weight: 400;
 }
 
 .recipient span {
   color: var(--form-text-secondary);
-  font-size: 16px;
+  font-size: 15px;
   font-family: 'Roboto Mono', monospace;
   text-decoration: underline;
 }
 
 .recipient a {
   color: var(--form-text-secondary);
-  font-size: 16px;
+  font-size: 15px;
   font-family: 'Roboto Mono', monospace;
   text-decoration: underline;
 }
@@ -885,7 +887,7 @@ body.work {
   border: none;
   border-bottom: 1px solid var(--input-border);
   font-family: 'Roboto Mono', monospace;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--form-text);
   border-radius: 0; /* Add this to remove Safari's default border radius */
   -webkit-appearance: none; /* Add this to remove Safari's default styling */
@@ -906,11 +908,18 @@ body.dark-mode .dropdown select {
     background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
 }
 
+.button-wrapper {
+    display: flex;
+    justify-content: left;
+    width: 100%;
+    gap: 10px;
+}
+
 .submit-button {
-  
-  padding: 8px 16px;  /* Adjust padding to be more compact */
+ width: auto; /* Change to auto to let it hug the content */  
+  padding: 8px 24px;  /* Adjust padding to be more compact */
   background: var(--button-bg);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.20);
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
   border: none;
   border-radius: 5px;
   display: inline-flex;  /* Change to inline-flex */
@@ -920,7 +929,7 @@ body.dark-mode .dropdown select {
   font-size: 16px;
   font-weight: 400;
   cursor: pointer;
-  color: var(--form-text);
+  color: rgba(0, 0, 0, 0.625);
   white-space: nowrap; /* Add this to prevent text wrapping */
   /* Remove min-width to let it hug the content */
   transition: all 0.12s ease;
@@ -928,15 +937,16 @@ body.dark-mode .dropdown select {
 
 .submit-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 5px 3px rgba(0, 0, 0, 0.08);
     filter: saturate(2.2);
+    color: rgba(0, 0, 0, 0.9);
 }
 
 img.chat-emoji {
-  position: absolute;
-  right: 10px;
-  top: -10px;
+  position: relative;
+max-width: min-content;
   cursor: pointer;
+  padding-bottom: 8px;
   
 }
 
@@ -947,17 +957,21 @@ img.chat-emoji:active {
 .social-links {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 10px;
     row-gap: 8px;
     flex-wrap: wrap; /* Add this line */
 }
 
 .social-links a {
   color: var(--form-text-secondary);
-  font-size: 13px;
+  opacity: 0.6;
+  font-size: 14px;
   font-family: Roboto, sans-serif;
+
+  font-weight: 500;
   text-decoration: none;
   line-height: 18px;
+
 }
 
 .social-links a:hover {
