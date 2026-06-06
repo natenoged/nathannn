@@ -179,7 +179,7 @@ body.home {
 .home .profile-card {
     
     width: 100%;
-    max-width: 320px;
+    max-width: 290px;
     background: var(--clear);
     border-radius: 10px 10px 0px 0px;
     border: 1px solid var(--form-bg);
@@ -190,7 +190,7 @@ body.home {
 }
 
 .home .status {
-    max-width: 320px;
+    width: 290px;
     background: var(--form-bg);
     border-radius: 0px 0px 10px 10px;
     border: 1px solid var(--form-bg);
