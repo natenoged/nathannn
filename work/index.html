@@ -197,55 +197,34 @@
             const modalPortfolioName = document.getElementById('modalPortfolioName');
             const modalPortfolioTags = document.getElementById('modalPortfolioTags');
 
-            async function renderGallery(galleryUrl, projectName) {
-                if (!galleryUrl) {
+            function renderGallery(galleryData, projectName) {
+                if (!galleryData) {
                     modalGalleryContainer.innerHTML = '';
                     return;
                 }
 
-                modalGalleryContainer.innerHTML = '<div class="modal-gallery-items">Loading…</div>';
                 const supportedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'];
-                const normalizedGalleryUrl = galleryUrl.replace(/\/?$/, '/') ;
-                let images = [];
+                const entries = galleryData
+                    .split(',')
+                    .map(entry => entry.trim())
+                    .filter(Boolean)
+                    .map(entry => {
+                        const markdownMatch = entry.match(/\(([^)]+)\)$/);
+                        if (markdownMatch) entry = markdownMatch[1];
+                        entry = entry.replace(/^['"\[\(<]+|['"\]>\)]+$/g, '').trim();
+                        return entry;
+                    });
 
-                async function fetchGalleryManifest(url) {
-                    try {
-                        const manifestResponse = await fetch(url + 'gallery.json');
-                        if (!manifestResponse.ok) return [];
-                        const manifest = await manifestResponse.json();
-                        if (!Array.isArray(manifest)) return [];
-                        return manifest
-                            .filter(Boolean)
-                            .map(file => new URL(file, url).href);
-                    } catch (error) {
-                        return [];
-                    }
-                }
-
-                async function fetchGalleryDirectory(url) {
-                    try {
-                        const response = await fetch(url);
-                        if (!response.ok) return [];
-                        const html = await response.text();
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const baseUrl = new URL(url, window.location.href).href;
-                        return Array.from(doc.querySelectorAll('a'))
-                            .map(link => link.getAttribute('href') || '')
-                            .filter(href => supportedExtensions.some(ext => href.toLowerCase().endsWith('.' + ext)))
-                            .map(href => new URL(href, baseUrl).href)
-                            .filter(Boolean);
-                    } catch (error) {
-                        return [];
-                    }
-                }
-
-                images = await fetchGalleryManifest(normalizedGalleryUrl);
-                if (!images.length) {
-                    images = await fetchGalleryDirectory(normalizedGalleryUrl);
-                }
-
-                images = Array.from(new Set(images));
+                const images = entries
+                    .map(entry => {
+                        if (!supportedExtensions.some(ext => entry.toLowerCase().endsWith('.' + ext))) return null;
+                        let url = entry.replace(/\\/g, '/');
+                        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+                        if (url.startsWith('/')) return url;
+                        if (url.startsWith('assets/')) return '/' + url;
+                        return `/assets/galleries/${url}`;
+                    })
+                    .filter(Boolean);
 
                 if (images.length > 0) {
                     modalGalleryContainer.innerHTML = `
@@ -262,11 +241,7 @@
                         </div>
                     `;
                 } else {
-                    modalGalleryContainer.innerHTML = `
-                        <div class="modal-gallery-empty">
-                            No gallery preview available. <a href="${sanitizeHTML(normalizedGalleryUrl)}" target="_blank" rel="noopener noreferrer">Open folder</a>
-                        </div>
-                    `;
+                    modalGalleryContainer.innerHTML = '<div class="modal-gallery-empty">No gallery preview available.</div>';
                 }
             }
 
@@ -283,7 +258,7 @@
             modalPortfolioName.textContent = name || 'Untitled';
             modalPortfolioTags.innerHTML = tags.map(tag => `<span class="tag" data-tag="${tag.toLowerCase()}">${tag}</span>`).join('');
 
-            const normalizedGalleryPath = galleryPath ? normalizePath(galleryPath).replace(/\/?$/, '/') : '';
+            const normalizedGalleryPath = galleryPath ? galleryPath.trim() : '';
             const externalLinks = externalLink
                 ? externalLink.split(',').map(link => link.trim()).filter(Boolean)
                 : [];
