@@ -203,26 +203,49 @@
                     return;
                 }
 
-                modalGalleryContainer.innerHTML = '<div class="gallery-heading">Gallery</div><div class="modal-gallery-items">Loading…</div>';
+                modalGalleryContainer.innerHTML = '<div class="modal-gallery-items">Loading…</div>';
                 const supportedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'];
+                const normalizedGalleryUrl = galleryUrl.replace(/\/?$/, '/') ;
                 let images = [];
 
-                try {
-                    const response = await fetch(galleryUrl);
-                    if (response.ok) {
+                async function fetchGalleryManifest(url) {
+                    try {
+                        const manifestResponse = await fetch(url + 'gallery.json');
+                        if (!manifestResponse.ok) return [];
+                        const manifest = await manifestResponse.json();
+                        if (!Array.isArray(manifest)) return [];
+                        return manifest
+                            .filter(Boolean)
+                            .map(file => new URL(file, url).href);
+                    } catch (error) {
+                        return [];
+                    }
+                }
+
+                async function fetchGalleryDirectory(url) {
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) return [];
                         const html = await response.text();
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
-                        const baseUrl = new URL(galleryUrl, window.location.href).href;
-                        images = Array.from(doc.querySelectorAll('a'))
+                        const baseUrl = new URL(url, window.location.href).href;
+                        return Array.from(doc.querySelectorAll('a'))
                             .map(link => link.getAttribute('href') || '')
                             .filter(href => supportedExtensions.some(ext => href.toLowerCase().endsWith('.' + ext)))
-                            .map(href => new URL(href, baseUrl).href);
-                        images = Array.from(new Set(images));
+                            .map(href => new URL(href, baseUrl).href)
+                            .filter(Boolean);
+                    } catch (error) {
+                        return [];
                     }
-                } catch (error) {
-                    images = [];
                 }
+
+                images = await fetchGalleryManifest(normalizedGalleryUrl);
+                if (!images.length) {
+                    images = await fetchGalleryDirectory(normalizedGalleryUrl);
+                }
+
+                images = Array.from(new Set(images));
 
                 if (images.length > 0) {
                     modalGalleryContainer.innerHTML = `
@@ -241,7 +264,7 @@
                 } else {
                     modalGalleryContainer.innerHTML = `
                         <div class="modal-gallery-empty">
-                            No gallery preview available. <a href="${sanitizeHTML(galleryUrl)}" target="_blank" rel="noopener noreferrer">Open folder</a>
+                            No gallery preview available. <a href="${sanitizeHTML(normalizedGalleryUrl)}" target="_blank" rel="noopener noreferrer">Open folder</a>
                         </div>
                     `;
                 }
