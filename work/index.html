@@ -38,6 +38,7 @@
             
             <div id="modalDescription"></div>
             <div id="modalVideoContainer"></div>
+            <div id="modalGalleryContainer" class="modal-gallery"></div>
         </div>
     </div>
 
@@ -161,7 +162,7 @@
                         window.open(item['external project link'], '_blank', 'noopener noreferrer');
                     } else {
                         // Open modal for regular items
-                        openModal(item['external project link'], item.description, item.name, tags);
+                        openModal(item['external project link'], item.description, item.name, tags, item.gallery);
                     }
                 });
 
@@ -187,15 +188,65 @@
             });
         }
 
-        // Open modal with portfolio details
-        function openModal(externalLink, description, name, tags) {
+        // Open modal with portfolio details, galleryPath
+        function openModal(externalLink, description, name, tags, galleryPath) {
             const modal = document.getElementById('portfolioModal');
             const modalVideoContainer = document.getElementById('modalVideoContainer');
+            const modalGalleryContainer = document.getElementById('modalGalleryContainer');
             const modalDescription = document.getElementById('modalDescription');
             const modalPortfolioName = document.getElementById('modalPortfolioName');
             const modalPortfolioTags = document.getElementById('modalPortfolioTags');
 
-        
+            async function renderGallery(galleryUrl, projectName) {
+                if (!galleryUrl) {
+                    modalGalleryContainer.innerHTML = '';
+                    return;
+                }
+
+                modalGalleryContainer.innerHTML = '<div class="gallery-heading">Gallery</div><div class="modal-gallery-items">Loading…</div>';
+                const supportedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'];
+                let images = [];
+
+                try {
+                    const response = await fetch(galleryUrl);
+                    if (response.ok) {
+                        const html = await response.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const baseUrl = new URL(galleryUrl, window.location.href).href;
+                        images = Array.from(doc.querySelectorAll('a'))
+                            .map(link => link.getAttribute('href') || '')
+                            .filter(href => supportedExtensions.some(ext => href.toLowerCase().endsWith('.' + ext)))
+                            .map(href => new URL(href, baseUrl).href);
+                        images = Array.from(new Set(images));
+                    }
+                } catch (error) {
+                    images = [];
+                }
+
+                if (images.length > 0) {
+                    modalGalleryContainer.innerHTML = `
+                        <div class="modal-gallery-items">
+                            ${images.map(src => {
+                                const fileName = src.split('/').pop() || 'Image';
+                                return `<div class="modal-gallery-item">
+                                            <a href="${sanitizeHTML(src)}" target="_blank" rel="noopener noreferrer">
+                                                <img src="${sanitizeHTML(src)}" alt="${sanitizeHTML(projectName)}">
+                                            </a>
+                                            <div class="modal-gallery-caption">${sanitizeHTML(fileName)}</div>
+                                        </div>`;
+                            }).join('')}
+                        </div>
+                    `;
+                } else {
+                    modalGalleryContainer.innerHTML = `
+                        <div class="modal-gallery-empty">
+                            No gallery preview available. <a href="${sanitizeHTML(galleryUrl)}" target="_blank" rel="noopener noreferrer">Open folder</a>
+                        </div>
+                    `;
+                }
+            }
+
             const projectSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
             history.replaceState(null, '', `/work/#${projectSlug}`);  // ✅ CHANGED pushState to replaceState
 
@@ -209,48 +260,61 @@
             modalPortfolioName.textContent = name || 'Untitled';
             modalPortfolioTags.innerHTML = tags.map(tag => `<span class="tag" data-tag="${tag.toLowerCase()}">${tag}</span>`).join('');
 
-            if (externalLink) {
-                let embedContent = '';
+            const normalizedGalleryPath = galleryPath ? normalizePath(galleryPath).replace(/\/?$/, '/') : '';
+            const externalLinks = externalLink
+                ? externalLink.split(',').map(link => link.trim()).filter(Boolean)
+                : [];
+            renderGallery(normalizedGalleryPath, name);
 
-                if (externalLink.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                    embedContent = `<img src="${externalLink}" alt="${name}">`;
-                } else if (externalLink.match(/\.(webm|mp4|ogg)$/i)) {
-                    embedContent = `<video src="${externalLink}" autoplay muted loop playsinline controls></video>`;
-                } else if (externalLink.includes('youtube.com') || externalLink.includes('youtu.be')) {
-                    let embedUrl = '';
-                    if (externalLink.includes('youtube.com')) {
-                        const urlParams = new URL(externalLink).searchParams;
-                        const videoId = urlParams.get('v');
-                        const playlistId = urlParams.get('list');
-                        embedUrl = playlistId
-                            ? `https://www.youtube.com/embed/videoseries?list=${playlistId}`
-                            : videoId
-                                ? `https://www.youtube.com/embed/${videoId}`
-                                : '';
-                    } else if (externalLink.includes('youtu.be')) {
-                        const videoId = externalLink.split('/').pop();
-                        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            if (externalLinks.length > 0) {
+                const embedSections = externalLinks.map((link) => {
+                    const normalizedLink = normalizePath(link);
+
+                    if (normalizedLink.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                        return `<img src="${sanitizeHTML(normalizedLink)}" alt="${sanitizeHTML(name)}">`;
                     }
-                    embedContent = embedUrl
-                        ? `<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`
-                        : '<p>No video</p>';
-                } else if (externalLink.includes('soundcloud.com')) {
-                    // Handle SoundCloud embeds
-                    const soundCloudUrl = encodeURIComponent(externalLink);
-                    embedContent = `<iframe 
-                        width="100%" 
-                        height="166" 
-                        scrolling="no" 
-                        frameborder="no" 
-                        src="https://w.soundcloud.com/player/?url=${soundCloudUrl}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
-                    ></iframe>`;
-                } else {
-                    embedContent = '<p>Unsupported content type</p>';
-                }
 
-                modalVideoContainer.innerHTML = embedContent;
+                    if (normalizedLink.match(/\.(webm|mp4|ogg)$/i)) {
+                        return `<video src="${sanitizeHTML(normalizedLink)}" autoplay muted loop playsinline controls></video>`;
+                    }
+
+                    if (normalizedLink.includes('youtube.com') || normalizedLink.includes('youtu.be')) {
+                        let embedUrl = '';
+                        if (normalizedLink.includes('youtube.com')) {
+                            const urlParams = new URL(normalizedLink).searchParams;
+                            const videoId = urlParams.get('v');
+                            const playlistId = urlParams.get('list');
+                            embedUrl = playlistId
+                                ? `https://www.youtube.com/embed/videoseries?list=${playlistId}`
+                                : videoId
+                                    ? `https://www.youtube.com/embed/${videoId}`
+                                    : '';
+                        } else if (normalizedLink.includes('youtu.be')) {
+                            const videoId = normalizedLink.split('/').pop();
+                            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                        }
+                        return embedUrl
+                            ? `<iframe src="${sanitizeHTML(embedUrl)}" frameborder="0" allowfullscreen></iframe>`
+                            : '<p>No video</p>';
+                    }
+
+                    if (normalizedLink.includes('soundcloud.com')) {
+                        const soundCloudUrl = encodeURIComponent(normalizedLink);
+                        return `<iframe 
+                            width="100%" 
+                            height="166" 
+                            scrolling="no" 
+                            frameborder="no" 
+                            src="https://w.soundcloud.com/player/?url=${soundCloudUrl}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
+                        ></iframe>`;
+                    }
+
+                    return `<p>Unsupported content type: ${sanitizeHTML(normalizedLink)}</p>`;
+                });
+
+                modalVideoContainer.innerHTML = embedSections.join('');
             } else {
-                modalVideoContainer.innerHTML = '<p>No content available</p>';
+                modalVideoContainer.innerHTML = '<p></p>';
             }
 
             modalDescription.innerHTML = description || '<p>No description</p>';
@@ -298,6 +362,7 @@
                 }
                 modal.style.display = 'none';
                 modalVideoContainer.innerHTML = '';
+                modalGalleryContainer.innerHTML = '';
                 modalDescription.innerHTML = '';
                 document.removeEventListener('keydown', handleKeydown);
                 window.removeEventListener('click', modalBackdropClick);  // ✅ CLEANUP ADDED
