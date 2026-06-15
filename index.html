@@ -28,14 +28,32 @@
       <div class="profile-card">
       <img class="profile-image" src="/assets/jpg/profile-40.jpg" alt="Nathan">
       <div class="profile-info">
-        I'm Nathan Nadler-Nir, a Designer & Creative Director 🇿🇦
+        I'm Nathan Nadler-Nir, a Designer & Creative Director
       </div>
       </div>
-      <div class="status">
-        <div class="status-text">
-        <span id="date"></span> Building a <a href="https://docs.google.com/forms/d/e/1FAIpQLSef3NaNb67sLQO-vyoLrR45hYOuNRk9ZCcWT6yBgsaAekjP_A/viewform?usp=preview">divination system</a>
-        </div>
-      </div>
+    <div class="status">
+  <div class="status-text">
+    <span id="date"></span> <span id="status-label"></span>
+  </div>
+</div>
+
+<script>
+  // Set date
+  const date = new Date();
+  document.getElementById('date').textContent =
+    date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Progress through statuses in order
+  fetch('/statuses.md')
+    .then(r => r.text())
+    .then(text => {
+      const statuses = text.split('\n').map(s => s.trim()).filter(Boolean);
+      const index = parseInt(localStorage.getItem('statusIndex') || '0', 10);
+      const pick = statuses[index % statuses.length];
+      localStorage.setItem('statusIndex', (index + 1) % statuses.length);
+      document.getElementById('status-label').innerHTML = pick;
+    });
+</script>
       <script>document.getElementById("date").innerHTML = new Date().toLocaleDateString('en-GB',{day:"2-digit", month:"2-digit", year:"2-digit"});</script>
 
       <!-- Navigation -->
@@ -53,42 +71,46 @@
         <span class="icon-wrapper">
           <img class="icon" src="/assets/icons/media.gif" alt="" aria-hidden="true">
         </span>
-        <span class="nav-link">Websites</span>
+        <span class="nav-link">Web</span>
       </a>
       <a href="work/#video" class="nav-link-item">
         <span class="icon-wrapper">
           <img class="icon" src="/assets/icons/film.gif" alt="" aria-hidden="true">
         </span>
-        <span class="nav-link">Film</span>
+        <span class="nav-link">Video</span>
       </a>
-      <a href="sketchbook/" class="nav-link-item">
+
+      <a href="work/#writing" class="nav-link-item">
+      <img class="icon" src="/assets/icons/clip.gif" alt="Writing icon">
+      <span class="nav-link">Writing</span>
+      </a>
+
+      <a href="work/#audio" class="nav-link-item">
+        <span class="icon-wrapper">
+          <img class="icon" src="/assets/icons/music-folder.gif" alt="" aria-hidden="true">
+        </span>
+        <span class="nav-link">Music</span>
+      </a>
+    </div>
+  </div> 
+
+  <a href="sketchbook/" class="nav-item">
         <span class="icon-wrapper">
           <img class="icon" src="/assets/icons/sketchbook.gif" alt="" aria-hidden="true">
         </span>
         <span class="nav-link">Sketchbook</span>
       </a>
-      <a href="work/#audio" class="nav-link-item">
-        <span class="icon-wrapper">
-          <img class="icon" src="/assets/icons/music-folder.gif" alt="" aria-hidden="true">
-        </span>
-        <span class="nav-link">Audio</span>
-      </a>
-    </div>
-  </div> 
 
-  <a href="https://nathannn.gumroad.com/" class="nav-item">
-    <img class="icon" src="/assets/icons/basket.gif" alt="Film icon">
-    <span class="nav-link">Shop</span>
-  </a>
+ 
   
   <a href="toolkit/" class="nav-item">
     <img class="icon" src="/assets/icons/tool.gif" alt="Film icon">
     <span class="nav-link">Toolkit</span>
   </a>
 
-  <a href="https://couchroom.substack.com/" class="nav-item">
-    <img class="icon" src="/assets/icons/clip.gif" alt="Writing icon">
-    <span class="nav-link">Writing</span>
+ <a href="https://nathannn.gumroad.com/" class="nav-item">
+    <img class="icon" src="/assets/icons/basket.gif" alt="Film icon">
+    <span class="nav-link">Shop</span>
   </a>
 
   <a href="about/" class="nav-item">
@@ -125,6 +147,7 @@
     <div class="form-block">
       <form class="contact-form fs-form" action="https://formspree.io/f/xqaqjpej" method="POST">
         <div class="form-inputs">
+          
           <div class="form-line fs-field">
             <label class="fs-label">To:</label>
             <div class="recipient">
@@ -133,7 +156,7 @@
           </div>
           
           <div class="form-line fs-field">
-            <label class="fs-label">I want a</label>
+            <label class="fs-label">I'd like a</label>
             <div class="dropdown">
               <select name="service" class="fs-input">
                 <option value="website">Website</option>
@@ -151,24 +174,30 @@
             <input type="email" name="email" class="fs-input" placeholder="Your email address" required>
           </div>
         </div>
-
-        <button type="submit" class="submit-button fs-button">
-          Get in touch
-        </button>
+        
+        <div class="button-wrapper">
+          <img class="chat-emoji" src="/assets/icons/mailbox.gif" alt="Mailbox emoji" onclick="toggleMailbox(this)">
+          <button type="submit" class="submit-button fs-button">
+            Send
+          </button>
+        </div>
       </form>
 
 
     </div>
 
     <div class="social-links" >
+      
       <a href="https://www.instagram.com/nathannadlernir" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.linkedin.com/in/natenoged/" target="_blank" rel="noopener">Linkedin</a>
-      <a href="https://www.youtube.com/@Natenoged" target="_blank" rel="noopener">YouTube</a>
-      <a href="https://substack.com/@natenoged" target="_blank" rel="noopener">Substack</a>
+      <!--a href="https://www.youtube.com/@Natenoged" target="_blank" rel="noopener">YouTube</a-->
+      <!--a href="https://substack.com/@natenoged" target="_blank" rel="noopener">Substack</a-->
       <a href="https://github.com/natenoged" target="_blank" rel="noopener">Github</a>
       <!--a href="https://buymeacoffee.com/natenoged" target="_blank" rel="noopener">💗 Buy me a coffee</a-->
+    <a>·</a>
+    <a>2026 © Nnn</a>
     </div>
-<img class="chat-emoji" src="/assets/icons/mailbox.gif" alt="Mailbox emoji" onclick="toggleMailbox(this)">
+
     
   </div>
 </div>
