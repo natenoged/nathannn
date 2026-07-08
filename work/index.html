@@ -29,7 +29,7 @@
 
     <div id="portfolioModal" class="modal">
         <div class="modal-content">
-            <div class="close">&lt; work</div>
+            <div class="close" tabindex="0" role="button">&lt; work</div>
             <div id="modalHeader">
                 <h3 id="modalPortfolioName"></h3>
                 <div id="modalPortfolioTags" class="portfolio-tags"></div>
@@ -250,9 +250,6 @@
 
             const closeButton = modal.querySelector('.close');
             const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-            const firstFocusableElement = modal.querySelectorAll(focusableElements)[0];
-            const focusableContent = modal.querySelectorAll(focusableElements);
-            const lastFocusableElement = focusableContent[focusableContent.length - 1];
             let previouslyFocusedElement = document.activeElement;
 
             modalPortfolioName.textContent = name || 'Untitled';
@@ -318,6 +315,11 @@
             modalDescription.innerHTML = description || '<p>No description</p>';
             modal.style.display = 'block';
 
+            // Compute focusable elements after all modal content has been populated
+            const focusableContent = modal.querySelectorAll(focusableElements);
+            const firstFocusableElement = focusableContent[0];
+            const lastFocusableElement = focusableContent[focusableContent.length - 1];
+
             // Trap focus within the modal
             function trapFocus(event) {
                 if (event.key === 'Tab') {
@@ -379,8 +381,6 @@
 
                             document.addEventListener('keydown', handleKeydown);
 
-            // Set focus to the first focusable element in the modal
-            firstFocusableElement.focus();
         }
 
         // Create filter buttons dynamically based on tags
@@ -457,6 +457,11 @@
                         targetButton.click();
                     } else {
                         renderPortfolio(allItems);
+                        // Not a filter - check if it's a direct link to a project
+                        const matchingItem = findItemBySlug(initialHash);
+                        if (matchingItem) {
+                            openModalForItem(matchingItem);
+                        }
                     }
                 } else {
                     renderPortfolio(allItems);
@@ -467,13 +472,27 @@
             }
         }
 
+        // Find a portfolio item whose slugified name matches the given hash
+        function findItemBySlug(slug) {
+            return allItems.find(item => {
+                const itemSlug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                return itemSlug === slug;
+            });
+        }
+
+        // Open the modal for a given portfolio item
+        function openModalForItem(item) {
+            const tags = item.tags ? item.tags.split(',').map(tag => tag.trim()) : [];
+            openModal(item['external project link'], item.description, item.name, tags, item.gallery);
+        }
+
         // Handle URL hash changes
         function handleHashChange() {
             const hash = window.location.hash.replace(/^#?\/?/, '').toLowerCase();
-            
+
             // Check if it's a filter or a project
             const filterButton = document.querySelector(`[data-filter="${hash}"]`);
-            
+
             if (filterButton) {
                 // It's a filter - click the button
                 if (!filterButton.classList.contains('active')) {
@@ -481,17 +500,12 @@
                 }
             } else if (hash) {
                 // It's a project slug - find and open the modal
-                const matchingItem = allItems.find(item => {
-                    const itemSlug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-                    return itemSlug === hash;
-                });
-                
+                const matchingItem = findItemBySlug(hash);
+
                 if (matchingItem) {
-                    const tags = matchingItem.tags ? matchingItem.tags.split(',').map(tag => tag.trim()) : [];
-                    
                     // Temporarily remove pushState from openModal to avoid double-pushing
                     const originalHash = window.location.hash;
-                    openModal(matchingItem['external project link'], matchingItem.description, matchingItem.name, tags);
+                    openModalForItem(matchingItem);
                     // Restore hash if openModal changed it
                     if (window.location.hash !== originalHash) {
                         history.replaceState(null, '', originalHash);
