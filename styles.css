@@ -1,4 +1,27 @@
 /* #region Variables & Imports */
+/* Self-hosted so the fonts are same-origin and preloadable. Fetching them from
+   Google costs two extra connections and two round trips before text can settle,
+   which is the swap you can see on a hard refresh. Roboto ships as one variable
+   file covering the whole 100-900 weight range, so it also stands in for Roboto
+   Flex. Roboto and Roboto Mono are Apache-2.0; latin subsets only. */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('/assets/fonts/roboto-variable-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Roboto Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/assets/fonts/roboto-mono-400-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
     --BG: #F9F9F9;
     --clear: white;
@@ -10,8 +33,10 @@
     --form-bg: #EDEDED;
     --form-text: #000000;
     --form-text-secondary: rgba(0, 0, 0, 0.60);
-    --button-bg: #D8FFE4;
+    --button-bg: #CFD4EA;
+    --button-text: #3F4C87;
     --input-border: #000000;
+    --card-border: #E3E3E3;
 }
 
 body.dark-mode {
@@ -25,15 +50,16 @@ body.dark-mode {
     --form-bg: #2d2d2d;
     --form-text: #ffffff;
     --form-text-secondary: rgba(255, 255, 255, 0.60);
-    --button-bg: #1a4d2e;
+    --button-bg: #3F4C87;
+    --button-text: #CFD4EA;
     --input-border: #ffffff;
+    --card-border: #404040;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:slnt,wght@100..900&display=swap');
 /* #endregion */
 /* #region Base Styles */
 body {
-    font-family: 'Roboto Flex', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-synthesis: none; /* Prevents the browser from faking bold or italic */
     font-variation-settings: "slnt" 0; /* Forces the slant axis to zero */
     margin: 0 auto;
@@ -74,6 +100,13 @@ body {
 .icon {
     width: 20px;
     height: 20px;
+}
+
+.icon-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 4px;
 }
 
 .mode-toggle {
@@ -148,59 +181,125 @@ body.home {
   gap: 20px ;
   padding: 20px;
   padding-top: 60px;
+  box-sizing: border-box; /* keep the 100vh below from overflowing by its own padding */
 }
 
 @media (min-width: 768px) {
     body.home {
-        height: 100vh;
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
-        padding-top: 0px;
+        padding-top: 20px;
     }
 }
 
+.home .breadcrumb-link-block {
+    position: static;
+}
+
 .home .box {
-    display: flex;
-    flex-direction: column;
-    align-items: left;
+    display: grid;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 420px;
     gap: 20px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+        "profile"
+        "status"
+        "nav"
+        "reel"
+        "bottom";
 }
 
 @media (min-width: 768px) {
     .home .box {
-        flex-direction:row-reverse;
-        align-items: top;
-        gap: 30px;
+        width: auto;
+        max-width: none;
+        padding: 20px 30px;
+        grid-template-columns: max-content max-content;
+        grid-template-rows: auto auto 1fr auto;
+        grid-template-areas:
+            "nav profile"
+            "nav status"
+            "nav reel"
+            "bottom bottom";
+    }
+}
+
+.home .bottom-row {
+    grid-area: bottom;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .home .bottom-row {
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
     }
 }
 
 .home .profile-card {
-    
-    width: 100%;
-    max-width: 290px;
-    background: var(--clear);
-    border-radius: 10px 10px 0px 0px;
-    border: 1px solid var(--form-bg);
-    padding: 15px;
-    display: inline-flex;
+    grid-area: profile;
+    width: auto;
+    max-width: none;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0 10px;
+    display: flex;
     align-items: center;
     gap: 15px;
 }
 
 .home .status {
-    width: 290px;
-    background: var(--form-bg);
-    border-radius: 0px 0px 10px 10px;
-    border: 1px solid var(--form-bg);
-    padding: 6px 15px 10px 15px;
-    display: inline-flex;
-    gap: 10px;
-    margin-bottom: 25px;
+    grid-area: status;
+    width: auto;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 0;
     font-family: 'Roboto Mono', monospace;
     font-size: 14px;
+    line-height: 18.2px;
 }
+
+.js .home .status {
+    /* the label is fetched from /statuses.md - hold the whole row so it cannot
+       pop in a beat after the date. Released by .is-ready, with a JS timeout
+       fallback; without JS the rule never applies and the row shows normally. */
+    opacity: 0;
+    animation-play-state: paused;
+}
+
+.js .home .status.is-ready {
+    opacity: 1;
+    animation-play-state: running;
+}
+
+.home .status-dot {
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    /* centred in a 28px column so the status text lines up with the profile text */
+    margin: 0 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1.2px solid var(--text-secondary);
+    background: transparent;
+}
+
 .home .status-text {
     opacity: 0.7;
     text-align: left;
@@ -208,41 +307,49 @@ body.home {
 
 .home .status-text a {
     color: var(--text-primary);
-    
-}
-.home .blocks-flex {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 10px;
-}
 
-@media (max-width: 768px) {
-    .home .blocks-flex {
-        display: flex;
-        flex-direction: column;
-        align-items: left;
-        justify-content: left;
-        gap: 20px;
-    }
 }
 
 .reel-link {
+    grid-area: reel;
     position: relative;
     overflow: hidden;
-    border-radius: 16px;
-    border: 1px solid #2222227e;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 6px;
+    background: var(--clear);
+    border: 1px solid var(--card-border);
+    padding: 20px;
     transition: transform 0.2s ease;
+  }
+
+  @media (min-width: 768px) {
+    .reel-link {
+        width: 379px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+  }
+
+  .reel-link video {
+    display: block;
+    width: 100%;
+    height: auto;
+    flex-shrink: 0;
+    border-radius: 3px;
   }
 
   /* Centered Play Button Overlay */
   .play-overlay {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    /* sit inside the card padding so only the video is tinted, not the white frame */
+    inset: 20px;
     display: flex; align-items: center; justify-content: center;
     background: rgba(0,0,0,0.1); /* Subtle tint on load */
     z-index: 2;
     transition: opacity 0.3s ease;
+    border-radius: 3px;
   }
 
   .play-button-icon {
@@ -261,23 +368,87 @@ body.home {
 
 .profile-pic,
 .profile-image {
-    width: 35px;
-    height: 35px;
+    width: 28px;
+    height: 28px;
     border-radius: 100%;
 transition: transform 0.3s ease; /* Add transition */
 }
 
+.profile-link {
+    display: flex;
+    flex-shrink: 0;
+    line-height: 0;
+}
+
 .profile-pic:hover,
+.profile-link:hover .profile-image,
 .profile-image:hover {
-    transform: scale(1.6); /* Grow by 10% on hover */
+    transform: scale(1.25);
 }
 
 .profile-info{
-    font-family:'Roboto', monospace;
-    font-size: 14px;
-    line-height: 18px;
+    font-family:'Roboto', sans-serif;
+    font-size: 16px;
+    line-height: 19.2px;
 }
+
+.profile-info strong {
+    font-weight: 600;
+}
+
+.home .form-block {
+    width: 100%;
+    max-width: 352px;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .home .form-block {
+        width: 352px;
+    }
+}
+
+.form-line-send {
+    width: 100%;
+}
+
+.form-line-send input.fs-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.person-image {
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+    /* poster/model are 940x1000 - reserve the box so nothing shifts on load */
+    aspect-ratio: 940 / 1000;
+}
+
+model-viewer.person-image {
+    display: block;
+    background-color: transparent;
+    --poster-color: transparent;
+    --progress-bar-height: 0px;
+    --progress-mask: none;
+    cursor: grab;
+}
+
+model-viewer.person-image:active {
+    cursor: grabbing;
+}
+
+@media (min-width: 768px) {
+    .home .person-image {
+        width: 159.6px;
+        max-width: 159.6px;
+        align-self: stretch;
+    }
+}
+
 .home .nav-menu {
+    grid-area: nav;
     height: 100%;
     width: auto;
     max-width: 340px;
@@ -292,7 +463,6 @@ transition: transform 0.3s ease; /* Add transition */
     display: flex;
     align-items: center;
     gap: 8px;
-    opacity: 0;
     text-decoration: none;
 }
 
@@ -343,8 +513,41 @@ transition: transform 0.3s ease; /* Add transition */
     display: flex;
     align-items: center;
     gap: 10px;
-    opacity: 0;
     text-decoration: none
+}
+
+/* Mobile (Figma iPhone frame): everything inside "content" is align-self: stretch,
+   so nav / reel / form / model all share one full-width edge. */
+@media (max-width: 767px) {
+    body.home {
+        padding: 20px 30px; /* Figma "content" padding */
+        gap: 0;
+        align-items: stretch;
+    }
+
+    .home .breadcrumb-link-block {
+        align-self: flex-start;
+        margin-right: auto;
+        margin-bottom: 40px; /* Figma "content" gap */
+    }
+
+    .home .box {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .home .nav-menu,
+    .home .form-block,
+    .home .person-image {
+        width: 100%;
+        max-width: none;
+    }
+
+    .home .social-links {
+        /* 20px "content" bottom padding + 10px root gap */
+        margin-top: 30px;
+    }
 }
 
 /* #endregion */
@@ -640,16 +843,8 @@ body.work {
 }
 
 .about .form-block {
-  align-self: left;
-  padding: 0;
-  background: var(--bg);
-}
-
-.about .contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  align-items: start;
+  width: 100%;
+  max-width: 352px;
   margin-bottom: 40px;
 }
 
@@ -845,10 +1040,79 @@ body.work {
     }
 }
 
-.nav-item,
-.submenu-content .nav-link-item {
-    opacity: 0;
-    animation: fadeIn 0.4s ease-out forwards;
+/* Load-in.
+   The hidden state and the timing live here rather than in JS: previously the page
+   painted fully visible and then JS snapped it to opacity 0 at DOMContentLoaded,
+   which is the flash we were trying to avoid. In CSS the animation starts at first
+   paint instead, and still runs if the script fails.
+
+   fill-mode is `backwards`, not `forwards`: it holds the *start* frame through the
+   delay and then hands the element back to its normal styling. `forwards` locks the
+   final opacity/transform and outranks later rules - that is what was silently
+   killing the .profile-image and .icon hover zoom. */
+.home .breadcrumb-link-block,
+.home .profile-card,
+.home .status,
+.home .nav-item,
+.home .nav-link-item,
+.home .reel-link,
+.home .form-block,
+.home .person-image,
+.home .social-links {
+    animation: fadeIn 0.3s ease-out backwards;
+}
+
+.home .profile-image,
+.home .icon {
+    /* ride along with whichever row the icon belongs to */
+    animation: grow 0.12s ease-out backwards;
+    animation-delay: inherit;
+}
+
+.home .icon-wrapper,
+.home .profile-link {
+    /* relay the row's delay down to the image it wraps */
+    animation-delay: inherit;
+}
+
+/* Big blocks lead so the page reads as complete early; the nav cascades underneath.
+   Everything has settled by ~0.71s instead of the previous ~1.15s.
+
+   The profile is the opening beat: it gets a longer fade and a clear gap before
+   anything else moves. At a 0.03s delay it was landing on first paint, finishing
+   before the eye settled, which is why it read as having no animation at all. */
+.home .profile-card    { animation-delay: 0.08s; animation-duration: 0.4s; }
+.home .profile-image   { animation-duration: 0.4s; }
+.home .status          { animation-delay: 0.16s; }
+.home .reel-link       { animation-delay: 0.20s; }
+.home .form-block      { animation-delay: 0.26s; }
+.home .person-image    { animation-delay: 0.32s; }
+.home .social-links    { animation-delay: 0.38s; }
+
+.home .nav-menu > a:nth-of-type(1)        { animation-delay: 0.16s; } /* Work */
+.home .submenu-content > a:nth-of-type(1) { animation-delay: 0.20s; } /* Web */
+.home .submenu-content > a:nth-of-type(2) { animation-delay: 0.23s; } /* Video */
+.home .submenu-content > a:nth-of-type(3) { animation-delay: 0.26s; } /* Writing */
+.home .submenu-content > a:nth-of-type(4) { animation-delay: 0.29s; } /* Music */
+.home .nav-menu > a:nth-of-type(2)        { animation-delay: 0.32s; } /* Sketchbook */
+.home .nav-menu > a:nth-of-type(3)        { animation-delay: 0.35s; } /* Toolkit */
+.home .nav-menu > a:nth-of-type(4)        { animation-delay: 0.38s; } /* Shop */
+.home .nav-menu > a:nth-of-type(5)        { animation-delay: 0.41s; } /* About */
+
+@media (prefers-reduced-motion: reduce) {
+    .home .breadcrumb-link-block,
+    .home .profile-card,
+    .home .status,
+    .home .nav-item,
+    .home .nav-link-item,
+    .home .reel-link,
+    .home .form-block,
+    .home .person-image,
+    .home .social-links,
+    .home .profile-image,
+    .home .icon {
+        animation: none;
+    }
 }
 
 
@@ -885,11 +1149,15 @@ body.work {
 }
 
 .form-block {
+  position: relative;
+  /* the 352px in the design is the card's outer width */
+  box-sizing: border-box;
+  min-width: 0;
   width: 290px;
-  padding: 30px 30px 30px;
+  padding: 20px 30px 30px;
   background: var(--clear);
-  border-radius: 10px;
-  border: 1px solid var(--form-bg);
+  border-radius: 6px;
+  border: 1px solid var(--card-border);
 }
 
 .contact-form {
@@ -904,7 +1172,7 @@ body.work {
   width: auto;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
 }
 
 .form-line {
@@ -912,6 +1180,23 @@ body.work {
   justify-content: left;
   align-items: center;
   gap: 10px;
+}
+
+.mailbox-icon {
+  /* pinned over the top-left corner of the mailer card */
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease;
+}
+
+.mailbox-icon:active {
+  transform: scale(0.9);
 }
 
 .form-line label {
@@ -933,6 +1218,7 @@ body.work {
   font-size: 15px;
   font-family: 'Roboto Mono', monospace;
   text-decoration: underline;
+  overflow-wrap: anywhere;
 }
 
 .recipient a:hover {
@@ -942,7 +1228,7 @@ body.work {
 .dropdown select,
 .form-line input {
   padding: 4px 10px;
-  background: var(--form-bg);
+  background: var(--BG);
   border: none;
   border-bottom: 1px solid var(--input-border);
   font-family: 'Roboto Mono', monospace;
@@ -975,8 +1261,8 @@ body.dark-mode .dropdown select {
 }
 
 .submit-button {
- width: auto; /* Change to auto to let it hug the content */  
-  padding: 8px 24px;  /* Adjust padding to be more compact */
+ width: auto; /* Change to auto to let it hug the content */
+  padding: 8px 16px;
   background: var(--button-bg);
   box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
   border: none;
@@ -988,7 +1274,7 @@ body.dark-mode .dropdown select {
   font-size: 16px;
   font-weight: 400;
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.625);
+  color: var(--button-text);
   white-space: nowrap; /* Add this to prevent text wrapping */
   /* Remove min-width to let it hug the content */
   transition: all 0.12s ease;
@@ -997,8 +1283,8 @@ body.dark-mode .dropdown select {
 .submit-button:hover {
     transform: translateY(-2px);
     box-shadow: 0px 5px 3px rgba(0, 0, 0, 0.08);
-    filter: saturate(2.2);
-    color: rgba(0, 0, 0, 0.9);
+    filter: saturate(1.4);
+    color: var(--button-text);
 }
 
 img.chat-emoji {
@@ -1026,8 +1312,7 @@ img.chat-emoji:active {
   opacity: 0.6;
   font-size: 14px;
   font-family: Roboto, sans-serif;
-
-  font-weight: 500;
+  font-weight: 400;
   text-decoration: none;
   line-height: 18px;
 

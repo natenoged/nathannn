@@ -21,51 +21,80 @@
   <meta name="twitter:image" content="https://nathannn.com/assets/jpg/preview.jpg">
 
   <link rel="canonical" href="https://nathannn.com">
+  <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/roboto-variable-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/roboto-mono-400-latin.woff2" crossorigin>
+  <link rel="preload" as="image" href="/assets/motionreel-poster.jpg" fetchpriority="high">
+  <script>
+    // Marks that JS is available (gates the status-row hold in styles.css) and
+    // starts the statuses fetch during head parse, so it is usually resolved
+    // before first paint instead of arriving a beat after the date.
+    document.documentElement.classList.add('js');
+    window.__statuses = fetch('/statuses.md').then(r => r.text()).catch(() => '');
+  </script>
   <link rel="stylesheet" href="/styles.css">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <script src="/theme.js" defer></script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
   
 </head>
 <body class="home">
 
-            
-<div class="box">     
-      
-  <div class="blocks-flex" style="gap: 0">
+<a href="/" class="breadcrumb-link-block">
+  <div class="breadcrumb-link-text">nathannn.com</div>
+</a>
+
+<div class="box">
+
     <!-- Profile Card -->
-      <div class="profile-card">
-      <img class="profile-image" src="/assets/jpg/profile-40.jpg" alt="Nathan">
+    <div class="profile-card">
+      <a href="/about/" class="profile-link" aria-label="About Nathan">
+        <img class="profile-image" src="/assets/jpg/profile-40.jpg" alt="">
+      </a>
       <div class="profile-info">
-        I'm Nathan Nadler-Nir, a Designer & Creative Director
+        I'm <strong>Nathan Nadler-Nir</strong>,<br>Designer &amp; Creative Director
       </div>
-      </div>
+    </div>
+
     <div class="status">
+  <span class="status-dot" aria-hidden="true"></span>
   <div class="status-text">
     <span id="date"></span> <span id="status-label"></span>
   </div>
 </div>
 
 <script>
-  // Set date
-  const date = new Date();
-  document.getElementById('date').textContent =
-    date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  (() => {
+    const row = document.querySelector('.status');
+    document.getElementById('date').textContent =
+      new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
-  // Progress through statuses in order
-  fetch('/statuses.md')
-    .then(r => r.text())
-    .then(text => {
+    // reveal the row as one piece, once the label is in place
+    const reveal = () => row.classList.add('is-ready');
+
+    (window.__statuses || Promise.resolve('')).then(text => {
       const statuses = text.split('\n').map(s => s.trim()).filter(Boolean);
-      const index = parseInt(localStorage.getItem('statusIndex') || '0', 10);
-      const pick = statuses[index % statuses.length];
-      localStorage.setItem('statusIndex', (index + 1) % statuses.length);
-      document.getElementById('status-label').innerHTML = pick;
-    });
+      if (statuses.length) {
+        const index = parseInt(localStorage.getItem('statusIndex') || '0', 10);
+        const label = document.getElementById('status-label');
+        label.innerHTML = statuses[index % statuses.length];
+        localStorage.setItem('statusIndex', (index + 1) % statuses.length);
+        // statuses.md carries bare <a> tags - always send them to a new tab
+        label.querySelectorAll('a').forEach(a => {
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+        });
+      }
+      reveal();
+    }).catch(reveal);
+
+    // never leave the row hidden if the fetch hangs
+    setTimeout(reveal, 1200);
+  })();
 </script>
-      <script>document.getElementById("date").innerHTML = new Date().toLocaleDateString('en-GB',{day:"2-digit", month:"2-digit", year:"2-digit"});</script>
 
       <!-- Navigation -->
-      <nav class="nav-menu" aria-label="Main navigation" style="margin-bottom: 20px;">
+      <nav class="nav-menu" aria-label="Main navigation">
   <a href="work/" class="nav-item first-item">
     <span class="icon-wrapper">
       <img class="icon" src="/assets/icons/star.svg" alt="" aria-hidden="true">
@@ -133,36 +162,30 @@
 -->
   </nav>
 
-      
-
-  </div>
-
-<div class ="blocks-flex" style="align-items: center; max-width: 350px; gap: 20px;">
-  <div class="reel-link" onclick="toggleVideo(this)" style="position: relative; cursor: pointer;">
+  <div class="reel-link" onclick="toggleVideo(this)" style="cursor: pointer;">
   <div class="play-overlay">
     <div class="play-button-icon"></div>
   </div>
 
-  <video id="motionReel" poster="/assets/motionreel-poster.jpg" loop muted playsinline style="width: 100%; height: auto; display: block; object-fit: cover; border-radius: 16px;">
+  <video id="motionReel" poster="/assets/motionreel-poster.jpg" loop muted playsinline>
     <source src="/assets/motionreel.webm" type="video/webm">
   </video>
 </div>
 
   <!--Contact-->
-      
-      <div class="contact-section" style="padding: 0;">
-        
+  <div class="bottom-row">
     <div class="form-block">
+      <img class="mailbox-icon" src="/assets/icons/mailbox.gif" alt="Toggle the mailbox flag" role="button" tabindex="0">
       <form class="contact-form fs-form" action="https://formspree.io/f/xqaqjpej" method="POST">
         <div class="form-inputs">
-          
+
           <div class="form-line fs-field">
             <label class="fs-label">To:</label>
             <div class="recipient">
               <a href="mailto:nathan.nadlernir@gmail.com">nathan.nadlernir@gmail.com</a>
             </div>
           </div>
-          
+
           <div class="form-line fs-field">
             <label class="fs-label">I'd like a</label>
             <div class="dropdown">
@@ -171,74 +194,67 @@
                 <option value="design">Design</option>
                 <option value="video">Video</option>
                 <option value="quote">Quote</option>
-                <option value="meeting">Meeting</option>
+                <option value="meeting" selected>Meeting</option>
                 <option value="friend">Friend</option>
               </select>
             </div>
           </div>
 
-          <div class="form-line fs-field">
+          <div class="form-line fs-field form-line-send">
             <label class="fs-label">Signed,</label>
-            <input type="email" name="email" class="fs-input" placeholder="Your email address" required>
+            <input type="email" name="email" class="fs-input" placeholder="Your email" required>
+            <button type="submit" class="submit-button fs-button">
+              Send
+            </button>
           </div>
         </div>
-        
-        <div class="button-wrapper">
-          <img class="chat-emoji" src="/assets/icons/mailbox.gif" alt="Mailbox emoji" onclick="toggleMailbox(this)">
-          <button type="submit" class="submit-button fs-button">
-            Send
-          </button>
-        </div>
       </form>
-
-
     </div>
 
-    <div class="social-links" >
-      
-      <a href="https://www.instagram.com/nathannadlernir" target="_blank" rel="noopener">Instagram</a>
-      <a href="https://www.linkedin.com/in/natenoged/" target="_blank" rel="noopener">Linkedin</a>
-      <!--a href="https://www.youtube.com/@Natenoged" target="_blank" rel="noopener">YouTube</a-->
-      <!--a href="https://substack.com/@natenoged" target="_blank" rel="noopener">Substack</a-->
-      <a href="https://github.com/natenoged" target="_blank" rel="noopener">Github</a>
-      <!--a href="https://buymeacoffee.com/natenoged" target="_blank" rel="noopener">💗 Buy me a coffee</a-->
-    <a>·</a>
-    <a>2026 © Nnn</a>
-    </div>
-
-    
+    <!-- shows the poster, then swaps itself for the interactive model once the .glb has loaded -->
+    <model-viewer
+      class="person-image"
+      alt="A 3D scan of Nathan, arms out"
+      poster="/assets/3D/NNN-poster.webp"
+      src="/assets/3D/NNN.glb"
+      shadow-intensity="1"
+      camera-controls
+      touch-action="pan-y"
+      disable-zoom
+      disable-pan
+      auto-rotate
+      auto-rotate-delay="0"
+      rotation-per-second="12deg"></model-viewer>
   </div>
+
 </div>
+
+<div class="social-links">
+  <a href="https://www.instagram.com/nathannadlernir" target="_blank" rel="noopener">Instagram</a>
+  <a href="https://www.linkedin.com/in/natenoged/" target="_blank" rel="noopener">Linkedin</a>
+  <!--a href="https://www.youtube.com/@Natenoged" target="_blank" rel="noopener">YouTube</a-->
+  <!--a href="https://substack.com/@natenoged" target="_blank" rel="noopener">Substack</a-->
+  <a href="https://github.com/natenoged" target="_blank" rel="noopener">Github</a>
+  <!--a href="https://buymeacoffee.com/natenoged" target="_blank" rel="noopener">💗 Buy me a coffee</a-->
+  <a>·</a>
+  <a>2026 © Nnn</a>
 </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // Combined animations
-        const fadeElements = document.querySelectorAll(
-            ".chat-emoji, .profile-card, .status, .nav-item, .submenu-content .nav-link-item, .section-title, .window, .form-block, .social-links, .reel-link"
-        );
-        const growElements = document.querySelectorAll(".profile-image, .icon");
-
-        fadeElements.forEach((item, index) => {
-            item.style.opacity = "0";
-            item.style.animation = `fadeIn 0.4s ease-out forwards`;
-            item.style.animationDelay = `${index * 0.05}s`;
-        });
-
-        growElements.forEach((item, index) => {
-            item.style.transform = "scale(0)";
-            item.style.animation = `grow 0.1s ease-out forwards`;
-            item.style.animationDelay = `${index * 0.05}s`;
-        });
+  // the mailbox flag flips between the two gifs on click
+  (() => {
+    const mailbox = document.querySelector('.mailbox-icon');
+    if (!mailbox) return;
+    const frames = ['/assets/icons/mailbox.gif', '/assets/icons/mailbox2.gif'];
+    const flip = () => {
+      const next = frames[(frames.indexOf(new URL(mailbox.src).pathname) + 1) % frames.length];
+      mailbox.src = next;
+    };
+    mailbox.addEventListener('click', flip);
+    mailbox.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
     });
-  function toggleMailbox(element) {
-    const currentSrc = element.src;
-    if (currentSrc.includes('mailbox.gif')) {
-      element.src = '/assets/icons/mailbox2.gif';
-    } else {
-      element.src = '/assets/icons/mailbox.gif';
-    }
-  }
+  })();
 
   function toggleVideo(container) {
     const video = container.querySelector('video');

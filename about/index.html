@@ -78,6 +78,7 @@ Over the years, I have:
 <!--Contact-->
       <div class="contact-section">
     <div class="form-block">
+      <img class="mailbox-icon" src="/assets/icons/mailbox.gif" alt="Toggle the mailbox flag" role="button" tabindex="0">
       <form class="contact-form fs-form" action="https://formspree.io/f/xqaqjpej" method="POST">
         <div class="form-inputs">
           <div class="form-line fs-field">
@@ -95,21 +96,20 @@ Over the years, I have:
                 <option value="design">Design</option>
                 <option value="video">Video</option>
                 <option value="quote">Quote</option>
-                <option value="meeting">Meeting</option>
+                <option value="meeting" selected>Meeting</option>
                 <option value="friend">Friend</option>
               </select>
             </div>
           </div>
 
-          <div class="form-line fs-field">
+          <div class="form-line fs-field form-line-send">
             <label class="fs-label">Signed,</label>
-            <input type="email" name="email" class="fs-input" placeholder="Your email address" required>
+            <input type="email" name="email" class="fs-input" placeholder="Your email" required>
+            <button type="submit" class="submit-button fs-button">
+              Send
+            </button>
           </div>
         </div>
-
-        <button type="submit" class="submit-button fs-button">
-          Get in touch
-        </button>
       </form>
     </div>
     <div class="social-links">
@@ -124,7 +124,22 @@ Over the years, I have:
 
   </div>
   </div>
-  
+
+  <script>
+    // the mailbox flag flips between the two gifs on click
+    (() => {
+      const mailbox = document.querySelector('.mailbox-icon');
+      if (!mailbox) return;
+      const frames = ['/assets/icons/mailbox.gif', '/assets/icons/mailbox2.gif'];
+      const flip = () => {
+        mailbox.src = frames[(frames.indexOf(new URL(mailbox.src).pathname) + 1) % frames.length];
+      };
+      mailbox.addEventListener('click', flip);
+      mailbox.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
+      });
+    })();
+  </script>
 
   </body>
 </html>
