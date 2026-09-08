@@ -32,9 +32,11 @@
     document.documentElement.classList.add('js');
     window.__statuses = fetch('/statuses.md').then(r => r.text()).catch(() => '');
   </script>
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/breadcrumb.css">
   <link rel="stylesheet" href="/styles.css">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <script src="/theme.js" defer></script>
+  <script src="/popups.js" defer></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
   
 </head>
@@ -95,7 +97,7 @@
 
       <!-- Navigation -->
       <nav class="nav-menu" aria-label="Main navigation">
-  <a href="work/" class="nav-item first-item">
+  <a href="work/" class="nav-item first-item" data-popup="work">
     <span class="icon-wrapper">
       <img class="icon" src="/assets/icons/star.svg" alt="" aria-hidden="true">
     </span>
@@ -104,25 +106,25 @@
   
   <div class="submenu">
     <div class="submenu-content">
-      <a href="work/#web" class="nav-link-item">
+      <a href="work/#web" class="nav-link-item" data-popup="web">
         <span class="icon-wrapper">
           <img class="icon" src="/assets/icons/media.gif" alt="" aria-hidden="true">
         </span>
         <span class="nav-link">Web</span>
       </a>
-      <a href="work/#video" class="nav-link-item">
+      <a href="work/#video" class="nav-link-item" data-popup="video">
         <span class="icon-wrapper">
           <img class="icon" src="/assets/icons/film.gif" alt="" aria-hidden="true">
         </span>
         <span class="nav-link">Video</span>
       </a>
 
-      <a href="work/#writing" class="nav-link-item">
+      <a href="work/#writing" class="nav-link-item" data-popup="writing">
       <img class="icon" src="/assets/icons/clip.gif" alt="Writing icon">
       <span class="nav-link">Writing</span>
       </a>
 
-      <a href="work/#audio" class="nav-link-item">
+      <a href="work/#audio" class="nav-link-item" data-popup="music">
         <span class="icon-wrapper">
           <img class="icon" src="/assets/icons/music-folder.gif" alt="" aria-hidden="true">
         </span>
@@ -131,7 +133,7 @@
     </div>
   </div> 
 
-  <a href="sketchbook/" class="nav-item">
+  <a href="sketchbook/" class="nav-item" data-popup="sketchbook">
         <span class="icon-wrapper">
           <img class="icon" src="/assets/icons/sketchbook.gif" alt="" aria-hidden="true">
         </span>

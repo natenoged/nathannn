@@ -23,6 +23,7 @@
 }
 
 :root {
+    color-scheme: light;
     --BG: #F9F9F9;
     --clear: white;
     --Smoke: #D3D3D3;
@@ -30,6 +31,15 @@
     --text-secondary: #666666;
     --nav-link: rgb(0, 0, 255);
     --tag-bg: #eeeeeeb0;
+    /* tag pills keep their pastel identity in both themes, so their text is
+       always dark rather than following --text-primary */
+    --tag-fg: #1a1a1a;
+    --filter-hover: #eeeeee;
+    --filter-active-bg: #2b2b2b;
+    --filter-active-fg: #ffffff;
+    --media-placeholder: #f0f0f0;
+    --hairline: rgba(0, 0, 0, 0.084);
+    --submenu-rule: rgba(211, 211, 211, 0.49);
     --form-bg: #EDEDED;
     --form-text: #000000;
     --form-text-secondary: rgba(0, 0, 0, 0.60);
@@ -37,23 +47,35 @@
     --button-text: #3F4C87;
     --input-border: #000000;
     --card-border: #E3E3E3;
+    --skeleton: #e9e9e9;
+    --skeleton-shine: #f4f4f4;
 }
 
-body.dark-mode {
-    --BG: #1a1a1a;
-    --clear: #2d2d2d;
+.dark-mode {
+    color-scheme: dark;
+    --BG: #0f0f0f;
+    --clear: #141414;
     --Smoke: #404040;
     --text-primary: #ffffff;
     --text-secondary: #b3b3b3;
     --nav-link: rgb(246, 246, 246);
     --tag-bg: #eeeeeeb0;
+    --tag-fg: #1a1a1a;
+    --filter-hover: #262626;
+    --filter-active-bg: #f6f6f6;
+    --filter-active-fg: #0f0f0f;
+    --media-placeholder: #1e1e1e;
+    --hairline: rgba(255, 255, 255, 0.12);
+    --submenu-rule: rgba(255, 255, 255, 0.14);
     --form-bg: #2d2d2d;
     --form-text: #ffffff;
     --form-text-secondary: rgba(255, 255, 255, 0.60);
     --button-bg: #3F4C87;
     --button-text: #CFD4EA;
     --input-border: #ffffff;
-    --card-border: #404040;
+    --card-border: #252525;
+    --skeleton: #2a2a2a;
+    --skeleton-shine: #353535;
 }
 
 /* #endregion */
@@ -131,44 +153,8 @@ body {
     opacity: 1;
 }
 
-.breadcrumb-link-block {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-family: 'Roboto Mono', monospace;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-    background: #ffffff;
-    box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.132);
-    border: 0px solid #00000044;
-    border-radius: 3px;
-    text-decoration: none;
-    z-index: 999;
-    color: #000000;
-    font-size: 14px;
-    font-weight: 400;
-  }
-  
-  .breadcrumb-link-text{
-opacity: 60%;
-color: #0000ff;
-
-  }
-
-  .breadcrumb-link-text:hover{ 
-    text-decoration: underline;
-    opacity: 100%;
-}
-
-  .breadcrumb-link-arrow,
-  .breadcrumb-link-description {
-    
-    word-wrap: break-word;
-  }
-
+/* The breadcrumb chip itself is a component in /breadcrumb.css.
+   Only page-level placement belongs here. */
 
 
 /* #endregion */
@@ -193,10 +179,6 @@ body.home {
         align-items: center;
         padding-top: 20px;
     }
-}
-
-.home .breadcrumb-link-block {
-    position: static;
 }
 
 .home .box {
@@ -503,8 +485,18 @@ model-viewer.person-image:active {
     
     display: flex;
     flex-direction: column;
-    border-left: 1px solid #d3d3d37e;
     gap: 0px;
+    position: relative;
+}
+
+.home .submenu-content::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--submenu-rule);
 }
 
 .home .nav-link-item {
@@ -556,10 +548,7 @@ body.work {
   padding: 60px 20px;
 }
 
-.work .breadcrumb-link-block{
-    position: relative;
-    top: 0;
-    left: 0;
+.work .breadcrumb-link-block {
     margin-bottom: 20px;
 }
 
@@ -581,31 +570,14 @@ body.work {
 }
 
 .filter-controls button:hover {
-    background: #eeeeee;
+    background: var(--filter-hover);
 }
 
 .filter-controls button.active {
-    background: #2b2b2b;
-    color: #fff;
+    background: var(--filter-active-bg);
+    color: var(--filter-active-fg);
 }
 
-
-.portfolio-grid::before {
-    content: '';
-    position: absolute;
-    width: 1200px;
-    max-width: 100%;
-    height: 100%;
-    background: #00000007;
-    z-index: -10;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-    border-radius: 5px;
-}
-
-.portfolio-grid.loaded::before {
-    opacity: 0;
-}
 
 .portfolio-grid {
     display: grid;
@@ -636,37 +608,70 @@ body.work {
 }
 
 
-.thumbnail {
+/* The thumbnail box carries the placeholder; the image sits inside it at
+   opacity 0 and is only revealed once the whole file has decoded. Painting the
+   <img> directly would let it render top-down as bytes arrive - the web 1.0
+   scan-in - and putting the placeholder on the image itself would mean fading
+   the placeholder out along with it. */
+.thumb-wrap {
+    position: relative;
     width: 100%;
     aspect-ratio: 16/9;
-    background-color: #f0f0f0;
-    background-size: cover;
-    background-position: center;
+    overflow: hidden;
     border-radius: 3px;
-    outline: 1.5px solid rgba(0, 0, 0, 0.084);
+    outline: 1.5px solid var(--hairline);
     outline-offset: -1.5px;
-    box-shadow:inset 0 0 6px #ffffff51
+    box-shadow: inset 0 0 6px #ffffff51;
+    background-color: var(--skeleton);
+    animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
-
-.portfolio-item:not(.animate-in) .thumbnail {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
+.thumb-wrap.is-loaded {
+    animation: none;
+    background-color: transparent;
 }
 
-.portfolio-item:not(.animate-in) .thumbnail::before {
-    content: '';
+.thumbnail {
     display: block;
-    padding-top: 66.67%; /* 3:2 aspect ratio, adjust as needed */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-@keyframes skeleton-loading {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
+.thumbnail.is-loaded {
+    opacity: 1;
+}
+
+/* Placeholder cards shown before the sheet has answered. */
+.portfolio-item.is-skeleton {
+    opacity: 1;
+    filter: none;
+    pointer-events: none;
+}
+
+.skeleton-line {
+    height: 11px;
+    margin-top: 8px;
+    border-radius: 3px;
+    background-color: var(--skeleton);
+    animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-line.is-short {
+    width: 45%;
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% { background-color: var(--skeleton); }
+    50% { background-color: var(--skeleton-shine); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .thumb-wrap,
+    .skeleton-line {
+        animation: none;
     }
 }
 
@@ -714,6 +719,7 @@ body.work {
 .tag {
     font-family: 'Roboto', monospace;
     font-size: 12px;
+    color: var(--tag-fg);
     background: var(--tag-bg);
     padding: 2px 6px;
     border-radius: 3px;
@@ -826,10 +832,6 @@ body.work {
     margin-bottom: 2em;
 }
 
-.about .breadcrumb-link-block {
-    position: relative;
-}
-
 
 
 .about .contact-section {
@@ -868,7 +870,7 @@ body.work {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--BG);
 }
 
 .modal-content {
@@ -881,7 +883,7 @@ body.work {
 }
 
 .close {
-    color: #aaa;
+    color: var(--text-secondary);
     font-size: 14px;
     cursor: pointer;
     margin-bottom: 40px;
@@ -892,7 +894,7 @@ body.work {
 
 .close:hover,
 .close:focus {
-    color: black;
+    color: var(--text-primary);
 }
 
 #modalVideoContainer iframe {
@@ -901,7 +903,7 @@ body.work {
     border-radius: 3px;
     margin-bottom: 10px;
     border: none;
-    background-color: #f0f0f0;
+    background-color: var(--media-placeholder);
 }
 
 #modalVideoContainer video,
@@ -909,8 +911,8 @@ body.work {
     width: 100%;
     border-radius: 3px;
     margin-bottom: 10px;
-    background-color: #f0f0f0;
-    outline: 2px solid rgba(0, 0, 0, 0.084);
+    background-color: var(--media-placeholder);
+    outline: 2px solid var(--hairline);
     outline-offset: -1.5px;
     box-shadow:inset 0 0 6px #ffffff51
 }
@@ -954,7 +956,7 @@ body.work {
     max-width: 100%;
     object-fit: cover;
     display: block;
-    border: 1px solid rgb(0, 0, 0);
+    border: 1px solid var(--hairline);
 }
 
 
@@ -1018,6 +1020,105 @@ body.work {
     background-color: var(--Smoke);
 }
 /* #endregion */
+/* #region Popup ads */
+/* Resting on a nav item throws up a little window with a random thumbnail from
+   that category. The frame is itself a link to the same place as the nav item,
+   and hovering it keeps it open. */
+.popup-ad {
+    position: fixed;
+    z-index: 1200;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    width: 220px; /* keep in sync with WIDTH in popups.js */
+    background: var(--clear);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    transform-origin: top left;
+    animation: popup-in 0.16s ease-out;
+}
+
+.popup-ad.is-closing {
+    animation: popup-out 0.16s ease-in forwards;
+}
+
+.popup-ad-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 4px 4px 9px;
+    background: var(--form-bg);
+    border-bottom: 1px solid var(--card-border);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+}
+
+.popup-ad-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    opacity: 0.65;
+    color: var(--text-primary);
+}
+
+.popup-ad-close {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--text-primary);
+    opacity: 0.5;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.popup-ad-close:hover {
+    opacity: 1;
+    background: var(--BG);
+}
+
+.popup-ad:hover {
+    box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.38);
+}
+
+.popup-ad img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* the real ratio is set inline per image from its source dimensions, so the
+       box is reserved before load and nothing is ever cropped; this is only the
+       fallback if an entry somehow has no dimensions */
+    aspect-ratio: 16 / 9;
+    background: var(--form-bg);
+}
+
+@keyframes popup-in {
+    from { opacity: 0; transform: scale(0.92) translateY(-4px); }
+}
+
+@keyframes popup-out {
+    to { opacity: 0; transform: scale(0.96); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .popup-ad,
+    .popup-ad.is-closing {
+        animation: none;
+    }
+}
+/* #endregion */
 /* #region Animations*/
 @keyframes fadeIn {
     from {
@@ -1028,6 +1129,11 @@ body.work {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* fade with no travel - for things that should not slide into place */
+@keyframes fadeInPlace {
+    from { opacity: 0; }
 }
 
 @keyframes grow {
@@ -1089,6 +1195,12 @@ body.work {
 .home .person-image    { animation-delay: 0.32s; }
 .home .social-links    { animation-delay: 0.38s; }
 
+/* the rule fades in alongside the first submenu link it sits next to */
+.home .submenu-content::before {
+    animation: fadeInPlace 0.3s ease-out backwards;
+    animation-delay: 0.20s;
+}
+
 .home .nav-menu > a:nth-of-type(1)        { animation-delay: 0.16s; } /* Work */
 .home .submenu-content > a:nth-of-type(1) { animation-delay: 0.20s; } /* Web */
 .home .submenu-content > a:nth-of-type(2) { animation-delay: 0.23s; } /* Video */
@@ -1110,7 +1222,8 @@ body.work {
     .home .person-image,
     .home .social-links,
     .home .profile-image,
-    .home .icon {
+    .home .icon,
+    .home .submenu-content::before {
         animation: none;
     }
 }
@@ -1249,7 +1362,7 @@ body.work {
 }
 
 /* Add dark mode support for the dropdown arrow */
-body.dark-mode .dropdown select {
+.dark-mode .dropdown select {
     background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
 }
 
@@ -1323,7 +1436,7 @@ img.chat-emoji:active {
 }
 
 /* Update SVG color in submit button for dark mode */
-body.dark-mode .submit-button svg path {
+.dark-mode .submit-button svg path {
   stroke: var(--form-text);
 }
 /* #endregion */

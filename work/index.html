@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nathan's Work</title>
-    <!-- Preconnect for Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- the sheet is on the critical path; fonts are same-origin so preload them -->
+    <link rel="preconnect" href="https://docs.google.com">
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/roboto-variable-latin.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/roboto-mono-400-latin.woff2" crossorigin>
+    <script src="/theme.js"></script>
+    <link rel="stylesheet" href="/breadcrumb.css">
     <link rel="stylesheet" href="/styles.css">
     
     
@@ -14,7 +17,7 @@
 
 <a href="/" class="breadcrumb-link-block">
       <div class="breadcrumb-link-text">nathannn.com</div>
-      <div class="breadcrumb-link-arrow">></div>
+      <div class="breadcrumb-link-arrow">&gt;</div>
       <div class="breadcrumb-link-description">work</div>
     </a>
 
@@ -78,18 +81,26 @@
             return temp.innerHTML;
         }
 
+        // The sheet round trip is ~1.2-1.9s and nothing can render until it lands,
+        // so the last response is kept and used to paint immediately on the next
+        // visit while a fresh copy is fetched in the background. The grid is only
+        // rebuilt if the new CSV actually differs, which is rarely.
+        const CACHE_KEY = 'workSheetCSV:v1';
+        const COUNT_KEY = 'workItemCount:v1';
+
+        function readCachedCSV() {
+            try { return localStorage.getItem(CACHE_KEY); } catch (error) { return null; }
+        }
+
+        function writeCachedCSV(csv) {
+            try { localStorage.setItem(CACHE_KEY, csv); } catch (error) { /* quota / private mode */ }
+        }
+
         // Fetch portfolio data from Google Sheets
-        async function fetchPortfolioData() {
-            try {
-                const response = await fetch(SHEET_URL);
-                if (!response.ok) throw new Error('Failed to fetch data');
-                const csvData = await response.text();
-                return parseCSV(csvData);
-            } catch (error) {
-                console.error('Error fetching portfolio data:', error);
-                portfolioGrid.innerHTML = '<p>Error loading portfolio data. Please try again later.</p>';
-                return [];
-            }
+        async function fetchSheetCSV() {
+            const response = await fetch(SHEET_URL);
+            if (!response.ok) throw new Error('Failed to fetch data');
+            return response.text();
         }
 
         // Parse CSV data into a usable format
@@ -119,9 +130,27 @@
         }
 
         // renderPortfolio function with lazy loading
+        // Placeholder cards for the window between page load and the sheet
+        // answering (~1.2s cold), so the grid is never just empty space.
+        function renderSkeletons(count) {
+            portfolioGrid.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const card = document.createElement('div');
+                card.className = 'portfolio-item is-skeleton';
+                card.innerHTML =
+                    '<div>' +
+                        '<div class="thumb-wrap"></div>' +
+                        '<div class="portfolio-content">' +
+                            '<div class="skeleton-line"></div>' +
+                            '<div class="skeleton-line is-short"></div>' +
+                        '</div>' +
+                    '</div>';
+                portfolioGrid.appendChild(card);
+            }
+        }
+
         function renderPortfolio(items) {
             portfolioGrid.innerHTML = '';
-            portfolioGrid.classList.add('loaded'); // Add this lines
             filterControls.classList.add('loaded'); // Add this lines
             items.forEach((item, index) => {
                 const portfolioItem = document.createElement('div');
@@ -133,13 +162,12 @@
                 const isThumbnailVideo = item['thumbnail url'] && /\.(mp4|webm|ogg)$/.test(item['thumbnail url']);
                 const thumbnailUrl = item['thumbnail url'] ? normalizePath(item['thumbnail url']) : 'https://via.placeholder.com/300x200?text=No+Image';
                 const thumbnailContent = isThumbnailVideo
-                    ? `<video class="thumbnail" src="${sanitizeHTML(thumbnailUrl)}" 
-                        type="video/webm" 
-                        preload="metadata"
-                        loading="lazy">
+                    ? `<div class="thumb-wrap"><video class="thumbnail" src="${sanitizeHTML(thumbnailUrl)}"
+                        type="video/webm"
+                        preload="metadata">
                         Your browser does not support the video tag.
-                       </video>`
-                    : `<div class="thumbnail" style="background-image: url('${sanitizeHTML(thumbnailUrl)}')" loading="lazy"></div>`;
+                       </video></div>`
+                    : `<div class="thumb-wrap"><img class="thumbnail" src="${sanitizeHTML(thumbnailUrl)}" alt="" loading="lazy" decoding="async"></div>`;
 
                 portfolioItem.innerHTML = `
                     <div>
@@ -172,13 +200,36 @@
                 // Check if this item has been animated in this filter
                 const itemKey = `${item.name}-${currentFilter}`;
                 if (!animatedItems.has(itemKey)) {
+                    // capped: a flat index * 100 meant the last of 29 cards waited
+                    // 2.8s after the grid had already rendered
                     setTimeout(() => {
                         portfolioItem.classList.add('animate-in'); // Add class to trigger animation
                         portfolioItem.classList.add('hover-ready'); // Add class to enable hover effect
                         animatedItems.set(itemKey, true);
-                    }, index * 100);
+                    }, Math.min(index * 40, 400));
                 } else {
                     portfolioItem.classList.add('animate-in', 'hover-ready');
+                }
+
+                // Drop the placeholder and fade the image up only once it has fully
+                // decoded - decode() rather than load, so it is painted in one go
+                // instead of scanning down the frame as bytes arrive.
+                const thumbImg = portfolioItem.querySelector('img.thumbnail');
+                if (thumbImg) {
+                    const wrap = thumbImg.parentElement;
+                    const settle = () => {
+                        wrap.classList.add('is-loaded');
+                        thumbImg.classList.add('is-loaded');
+                    };
+                    const reveal = () => {
+                        if (thumbImg.decode) thumbImg.decode().then(settle, settle);
+                        else settle();
+                    };
+                    if (thumbImg.complete && thumbImg.naturalWidth) reveal();
+                    else {
+                        thumbImg.addEventListener('load', reveal, { once: true });
+                        thumbImg.addEventListener('error', settle, { once: true });
+                    }
                 }
 
                 portfolioGrid.appendChild(portfolioItem);
@@ -443,32 +494,62 @@
 
 
         
+        // Build the filters and paint whatever the current URL asks for.
+        function applyCurrentView({ openDeepLink }) {
+            createFilterButtons();
+
+            const hash = window.location.hash.replace(/^#?\/?/, '').toLowerCase();
+            const targetButton = hash && document.querySelector(`[data-filter="${hash}"]`);
+
+            if (targetButton) {
+                // render the filter directly - clicking would push another history entry
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                targetButton.classList.add('active');
+                renderPortfolio(allItems.filter(item =>
+                    item.tags && item.tags.split(',').map(tag => tag.trim().toLowerCase()).includes(hash)
+                ));
+                return;
+            }
+
+            renderPortfolio(allItems);
+
+            if (hash && openDeepLink) {
+                const matchingItem = findItemBySlug(hash);
+                if (matchingItem) openModalForItem(matchingItem);
+            }
+        }
+
         // Initialize portfolio
         async function initPortfolio() {
+            const cached = readCachedCSV();
+
+            if (cached) {
+                allItems = parseCSV(cached);
+                applyCurrentView({ openDeepLink: true });
+            } else {
+                // first visit: no data yet, so stand in placeholders at roughly the
+                // count we saw last time (12 is a reasonable cold guess)
+                let guess = 12;
+                try { guess = parseInt(localStorage.getItem(COUNT_KEY), 10) || 12; } catch (error) {}
+                renderSkeletons(Math.min(guess, 24));
+            }
+
             try {
-                allItems = await fetchPortfolioData();
-                createFilterButtons();
-                
-                // Handle initial hash after buttons are created
-                const initialHash = window.location.hash.replace(/^#?\/?/, '').toLowerCase();
-                if (initialHash) {
-                    const targetButton = document.querySelector(`[data-filter="${initialHash}"]`);
-                    if (targetButton) {
-                        targetButton.click();
-                    } else {
-                        renderPortfolio(allItems);
-                        // Not a filter - check if it's a direct link to a project
-                        const matchingItem = findItemBySlug(initialHash);
-                        if (matchingItem) {
-                            openModalForItem(matchingItem);
-                        }
-                    }
-                } else {
-                    renderPortfolio(allItems);
-                }
+                const fresh = await fetchSheetCSV();
+                writeCachedCSV(fresh);
+
+                if (fresh === cached) return; // nothing changed, leave the page alone
+
+                allItems = parseCSV(fresh);
+                try { localStorage.setItem(COUNT_KEY, String(allItems.length)); } catch (error) {}
+                // don't yank the grid out from under an open modal
+                const modalOpen = document.getElementById('portfolioModal').style.display === 'block';
+                if (!modalOpen) applyCurrentView({ openDeepLink: !cached });
             } catch (error) {
                 console.error('Failed to initialize portfolio:', error);
-                portfolioGrid.innerHTML = '<p>Error loading portfolio data. Please try again later.</p>';
+                if (!cached) {
+                    portfolioGrid.innerHTML = '<p>Error loading portfolio data. Please try again later.</p>';
+                }
             }
         }
 

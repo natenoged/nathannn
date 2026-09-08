@@ -1,0 +1,76 @@
+/* Breadcrumb chip
+   ----------------
+   The little "nathannn.com > page" pill. Self-contained on purpose: it carries
+   its own tokens so it can be dropped onto a page that does not load the main
+   stylesheet (the sketchbook has its own), and it was previously copy-pasted
+   into two stylesheets with four different per-page position overrides.
+
+   Markup:
+     <a href="/" class="breadcrumb-link-block">
+       <div class="breadcrumb-link-text">nathannn.com</div>
+       <div class="breadcrumb-link-arrow">&gt;</div>
+       <div class="breadcrumb-link-description">work</div>
+     </a>
+
+   The trailing two divs are omitted on the home page, which is the root crumb.
+   Add .is-pinned when the chip floats over a full-viewport iframe or canvas
+   instead of sitting in the normal flow. */
+
+:root {
+    --crumb-bg: #ffffff;
+    --crumb-fg: #000000;
+    --crumb-link: #0000ff;
+    --crumb-shadow: rgba(0, 0, 0, 0.132);
+}
+
+.dark-mode {
+    --crumb-bg: #141414;
+    --crumb-fg: #f6f6f6;
+    --crumb-link: #f6f6f6;
+    --crumb-shadow: rgba(0, 0, 0, 0.5);
+}
+
+.breadcrumb-link-block {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: var(--crumb-bg);
+    border-radius: 3px;
+    box-shadow: 0 4px 4px -3px var(--crumb-shadow);
+    color: var(--crumb-fg);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.35;
+    text-decoration: none;
+    z-index: 999;
+}
+
+/* floats over a full-viewport iframe or canvas rather than taking up space */
+.breadcrumb-link-block.is-pinned {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.breadcrumb-link-text {
+    color: var(--crumb-link);
+    opacity: 0.6;
+}
+
+.breadcrumb-link-block:hover .breadcrumb-link-text {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.breadcrumb-link-arrow,
+.breadcrumb-link-description {
+    word-wrap: break-word;
+}
+
+.breadcrumb-link-arrow {
+    opacity: 0.4;
+}
